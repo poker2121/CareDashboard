@@ -1,0 +1,371 @@
+.ordersContainer {
+  padding: 24px;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.header {
+  margin-bottom: 32px;
+}
+
+.header h2 {
+  font-size: 28px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+}
+
+.subtitle {
+  color: #6b7280;
+  margin: 5px 0 24px 0;
+  font-size: 14px;
+}
+
+.statsCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.statCard {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.statCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.statIconWrapper {
+  width: 48px;
+  height: 48px;
+  background: rgba(218, 158, 28, 0.1);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #da9e1c;
+  font-size: 20px;
+}
+.orderModal {
+  max-width: 600px;
+}
+
+.orderDetails {
+  padding: 16px;
+}
+
+.orderInfo {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.orderInfo h4 {
+  color: #da9e1c;
+  margin: 0;
+  font-size: 18px;
+}
+
+.orderDate {
+  color: #6b7280;
+  margin: 4px 0 0 0;
+  font-size: 14px;
+}
+
+.itemsSection {
+  margin-bottom: 24px;
+}
+
+.itemsSection h5 {
+  font-size: 16px;
+  color: #2c3e50;
+  margin-bottom: 16px;
+}
+
+.itemRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.itemInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.itemName {
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.itemQuantity {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.itemPrice {
+  color: #da9e1c;
+  font-weight: 500;
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 2px solid #f3f4f6;
+  font-weight: 600;
+}
+
+.modalTotal {
+  color: #da9e1c;
+  font-size: 18px;
+}
+
+.shippingSection {
+  background-color: #f8fafc;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.shippingSection h5 {
+  font-size: 16px;
+  color: #2c3e50;
+  margin-bottom: 8px;
+}
+
+.shippingSection p {
+  color: #475569;
+  margin: 0;
+  font-size: 14px;
+}
+.orderId {
+  font-family: monospace;
+  color: #da9e1c;
+  font-weight: 500;
+}
+
+.totalCell {
+  font-weight: 600;
+  color: #da9e1c;
+}
+
+.viewButton {
+  padding: 8px 16px;
+  border: 1px solid #da9e1c;
+  background: transparent;
+  color: #da9e1c;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.viewButton:hover {
+  background: #da9e1c;
+  color: white;
+}
+
+.statCard h3 {
+  font-size: 24px;
+  color: #2c3e50;
+  margin: 0;
+  font-weight: 600;
+}
+
+.statCard p {
+  color: #6b7280;
+  margin: 4px 0 0 0;
+  font-size: 14px;
+}
+
+.searchWrapper {
+  position: relative;
+  max-width: 400px;
+  margin-bottom: 24px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b7280;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 14px 16px 14px 44px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  background-color: white;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #2b3263;
+  box-shadow: 0 0 0 3px rgba(43, 50, 99, 0.1);
+}
+
+.tableWrapper {
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.ordersTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.ordersTable th {
+  background-color: #f8fafc;
+  padding: 16px 20px;
+  text-align: left;
+  font-weight: 600;
+  color: #475569;
+  font-size: 14px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.orderRow {
+  transition: background-color 0.2s ease;
+}
+
+.orderRow:hover {
+  background-color: #f8fafc;
+}
+
+.ordersTable td {
+  padding: 16px 20px;
+  border-bottom: 1px solid #e2e8f0;
+  color: #475569;
+  font-size: 14px;
+}
+
+.orderId {
+  font-family: monospace;
+  color: #2b3263;
+  font-weight: 500;
+}
+
+.customerCell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.customerAvatar {
+  width: 40px;
+  height: 40px;
+  background-color: #2b3263;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.customerInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.customerInfo h4 {
+  margin: 0;
+  font-size: 14px;
+  color: #2c3e50;
+}
+
+.customerInfo span {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.itemsList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.itemsList span {
+  font-size: 13px;
+  color: #475569;
+}
+
+.totalCell {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.delivered {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.processing {
+  background-color: #fff7ed;
+  color: #9a3412;
+}
+
+.intransit {
+  background-color: #eff6ff;
+  color: #1e40af;
+}
+
+.viewButton {
+  padding: 8px 16px;
+  border: 1px solid #2b3263;
+  background: transparent;
+  color: #2b3263;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 13px;
+}
+
+.viewButton:hover {
+  background: #2b3263;
+  color: white;
+}
+
+@media (max-width: 1024px) {
+  .statsCards {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .tableWrapper {
+    overflow-x: auto;
+  }
+  
+  .ordersTable {
+    min-width: 900px;
+  }
+}

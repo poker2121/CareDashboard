@@ -1,0 +1,232 @@
+.discountsContainer {
+  padding: 24px;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.header h2 {
+  font-size: 28px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+}
+
+.subtitle {
+  color: #6b7280;
+  margin: 5px 0 0 0;
+  font-size: 14px;
+}
+
+.addButton {
+  background-color: #2b3263;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.addButton:hover {
+  background-color: #1a1f3d;
+  transform: translateY(-1px);
+}
+
+.searchWrapper {
+  position: relative;
+  margin-bottom: 24px;
+  max-width: 400px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b7280;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 12px 16px 12px 44px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  background-color: white;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #2b3263;
+  box-shadow: 0 0 0 3px rgba(43, 50, 99, 0.1);
+}
+
+.tableWrapper {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.discountsTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.discountsTable th {
+  background-color: #f8fafc;
+  padding: 16px;
+  text-align: left;
+  font-weight: 600;
+  color: #475569;
+  font-size: 14px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.discountsTable td {
+  padding: 16px;
+  border-bottom: 1px solid #e2e8f0;
+  color: #475569;
+  font-size: 14px;
+}
+
+.codeCell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.copyIcon {
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.copyIcon:hover {
+  color: #2b3263;
+}
+
+.usageWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.usageBar {
+  width: 100%;
+  height: 6px;
+  background-color: #e2e8f0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.usageProgress {
+  height: 100%;
+  background-color: #2b3263;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.status {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.active {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.expired {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+}
+
+.actions button {
+  background: none;
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.editButton {
+  color: #2b3263;
+}
+
+.editButton:hover {
+  background-color: #f1f5f9;
+}
+
+.deleteButton {
+  color: #ef4444;
+}
+
+.deleteButton:hover {
+  background-color: #fef2f2;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.cancelButton {
+  padding: 8px 16px;
+  border: 1px solid #e2e8f0;
+  background-color: white;
+  border-radius: 6px;
+  color: #475569;
+  transition: all 0.2s ease;
+}
+
+.cancelButton:hover {
+  background-color: #f8fafc;
+}
+
+.submitButton {
+  padding: 8px 16px;
+  background-color: #2b3263;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.submitButton:hover {
+  background-color: #1a1f3d;
+}
+
+@media (max-width: 768px) {
+  .tableWrapper {
+    overflow-x: auto;
+  }
+  
+  .discountsTable {
+    min-width: 800px;
+  }
+}

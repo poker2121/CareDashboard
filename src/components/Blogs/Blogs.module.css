@@ -1,0 +1,367 @@
+.blogsContainer {
+  padding: 24px;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  gap: 16px;
+}
+
+.loadingContainer p {
+  color: #2b3263;
+  font-size: 16px;
+  margin: 0;
+}
+
+.loadingContainer :global(.spinner-border) {
+  width: 3rem;
+  height: 3rem;
+  color: #2b3263;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.header h2 {
+  font-size: 28px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+}
+.subtitle {
+  color: #6b7280;
+  margin: 5px 0 0 0;
+  font-size: 14px;
+}
+.searchSection {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  align-items: center;
+  background-color: #fff;
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+.searchWrapper {
+  position: relative;
+  flex: 1;
+  border-right: 1px solid #e2e8f0;
+  padding-right: 16px;
+}
+.searchIcon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #182371;
+}
+.searchInput {
+  width: 100%;
+  padding: 12px 16px 12px 48px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 15px;
+  transition: all 0.3s ease;
+}
+.searchInput:focus {
+  outline: none;
+  border-color: #2b3263;
+  box-shadow: 0 0 0 3px rgba(24, 35, 113, 0.1);
+}
+.categorySelect {
+  min-width: 180px;
+  padding: 12px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 15px;
+  color: #2b3263;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: white;
+}
+.createButton, .submitButton {
+  background-color: #2b3263 !important;
+  color: white !important;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+.metaInfo {
+  display: flex;
+  align-items: center;
+  gap: 16px;  /* Increase spacing between meta items */
+}
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;  /* Add space between icon and text */
+  color: #6b7280;
+  font-size: 14px;  /* Slightly larger font */
+}
+.metaItem svg {
+  font-size: 14px;  /* Match icon size with text */
+  color: #4b5563;  /* Slightly darker color for icons */
+}
+.actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+.blogItem{
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+}
+.blogContent{
+padding: 5px 12px;
+}
+.actions button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  transition: all 0.3s ease;
+}
+.actions button:first-child {
+  color: #1f2447;
+  border-color: #1f2447;
+}
+.actions button:first-child:hover {
+  background-color: #1f2447;
+  border-color: #1f2447;
+  color: white;
+}
+.actions button:last-child {
+  color: #dc2626;
+  border-color: #dc2626;
+}
+.actions button:last-child:hover {
+  background-color: #dc2626;
+  border-color: #dc2626;
+  color: white;
+}
+.resetButton {
+  background-color: transparent;
+  border: 1px solid #1f2447;
+  color: #1f2447;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.3s ease;
+}
+.resetButton:hover {
+  background-color: #1f2447;
+  color: white;
+  transform: translateY(-1px);
+}
+.modalFooter {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+.cancelButton {
+  background-color: #e5e7eb !important;
+  color: #4b5563 !important;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+.cancelButton:hover {
+  background-color: #d1d5db !important;
+  transform: translateY(-1px);
+}
+.createButton:hover {
+  background-color: #4361ee !important;
+  transform: translateY(-1px);
+}
+.blogCard {
+  height: 100%;
+  border: none !important;
+  border-radius: 12px !important;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.blogCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+.blogImage {
+  position: relative;
+  height: 300px;  /* Increased height */
+  overflow: hidden;
+  border-radius: 12px 12px 0 0;  
+  background-color: #f3f4f6; 
+}
+
+.blogImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;  /* Smoother transition */
+  filter: brightness(0.95);  /* Slightly dimmed for better text contrast */
+}
+
+.blogCard:hover .blogImage img {
+  transform: scale(1.08);  /* Slightly more zoom on hover */
+  filter: brightness(1);  /* Return to full brightness on hover */
+}
+
+.categoryBadge {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  background-color: rgba(43, 50, 99, 0.9) !important;  /* Semi-transparent */
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  color: white;
+  backdrop-filter: blur(4px);  /* Frosted glass effect */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.blogTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 8px;
+}
+.blogExcerpt {
+  color: #6b7280;
+  font-size: 14px;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+.blogMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.blogActions {
+  display: flex;
+  gap: 20px;  /* Increased gap between buttons */
+  justify-content: flex-end;
+  margin-top: 12px;  /* Added some top margin */
+}
+.actionButton {
+  min-width: 100px;  /* Added minimum width for consistent button size */
+  padding: 5px 15px !important;  /* Increased horizontal padding */
+  justify-content: center;  /* Center the content */
+}
+
+.actions button:hover {
+  background-color: #2b3263;
+  border-color: #2b3263;
+  color: white;
+}
+.actions button:last-child {
+  color: #ef4444;
+  border-color: #ef4444;
+}
+.actions button:last-child:hover {
+  background-color: #ef4444;
+  border-color: #ef4444;
+}
+.imagePreview {
+  width: 100%;
+  height: 200px;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.imagePreview img {
+  width: 50%;
+  height: 100%;
+  object-fit: cover;
+}
+.submitButton {
+  background-color: #2b3263 !important;
+  border: none;
+  width: 100%;
+}
+.submitButton:hover {
+  background-color: #4361ee !important;
+}
+@media (max-width: 768px) {
+  .searchSection {
+    flex-direction: column;
+  }
+  .searchWrapper {
+    border-right: none;
+    border-bottom: 1px solid #e2e8f0;
+    padding-right: 0;
+    padding-bottom: 16px;
+  }
+  .categorySelect {
+    width: 100%;
+  }
+}
+/* Add these styles for the empty state */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  background-color: white;
+  border-radius: 12px;
+  padding: 40px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+.emptyState img {
+  width: 120px;
+  height: 120px;
+  margin-bottom: 24px;
+  opacity: 0.7;
+}
+.emptyState h3 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 12px;
+}
+.emptyState p {
+  color: #6b7280;
+  font-size: 16px;
+  margin-bottom: 24px;
+  max-width: 400px;
+}
+.emptyState button {
+  background-color: #2b3263;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+.emptyState button:hover {
+  background-color: #4361ee;
+  transform: translateY(-1px);
+}
