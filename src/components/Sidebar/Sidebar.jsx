@@ -32,7 +32,7 @@ const Sidebar = () => {
     { icon: <FaUsers size={17} />, text: "Customers", path: "/customers" }, 
     { icon: <FaNewspaper size={17} />, text: "Blogs", path: "/blogs" },
     { icon: <FaShoppingCart size={17} />, text: "Orders", path: "/orders" },
-    { icon: <FaPercent size={17} />, text: "Discounts", path: "/discounts" },
+    { icon: <FaPercent size={17} />, text: "Coupones", path: "/discounts" },
     { icon: <FaSignOutAlt size={17} />, text: "Logout", path: "/logout" }
     
 ];
@@ -64,10 +64,7 @@ const Sidebar = () => {
         <div className="user-info" onClick={handleProfileClick} style={{ cursor: 'pointer' }}>
           <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="User" className="user-avatar" />
           <span>Admin Name</span>
-          <div className="notification-icon">
-            <FaBell size={20} />
-            <span className="notification-badge">3</span>
-          </div>
+          
         </div>
 
         <Nav className="flex-column">

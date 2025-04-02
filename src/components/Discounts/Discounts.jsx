@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import { FaPlus, FaEdit, FaTrash, FaCopy, FaSearch } from 'react-icons/fa';
 import { Modal, Form } from 'react-bootstrap';
 import { useDiscountContext } from '../../context/DiscountContext';
@@ -11,24 +11,33 @@ export default function Discounts() {
   const [editingDiscount, setEditingDiscount] = useState(null);
   const [formData, setFormData] = useState({
     code: '',
-    value: '',
-    expiryDate: '',
-    usageLimit: '',
-    status: 'Active'
+    amount: '',
+    fromDate: '',
+    toDate: '',
+    maxUsage: '',
+    usageCount: 0,
   });
 
   const handleShowModal = (discount = null) => {
     if (discount) {
       setEditingDiscount(discount);
-      setFormData(discount);
+      setFormData({
+        code: discount.code,
+        amount: discount.amount,
+        fromDate: discount.fromDate,
+        toDate: discount.toDate,
+        maxUsage: discount.maxUsage,
+        usageCount: discount.usageCount,
+      });
     } else {
       setEditingDiscount(null);
       setFormData({
         code: '',
-        value: '',
-        expiryDate: '',
-        usageLimit: '',
-        status: 'Active'
+        amount: '',
+        fromDate: '',
+        toDate: '',
+        maxUsage: '',
+        usageCount: 0,
       });
     }
     setShowModal(true);
@@ -39,13 +48,13 @@ export default function Discounts() {
     if (editingDiscount) {
       updateDiscount({ ...formData, id: editingDiscount.id });
     } else {
-      addDiscount({ ...formData, usageCount: 0 });
+      addDiscount({ ...formData });
     }
     setShowModal(false);
   };
 
   const filteredDiscounts = discounts.filter(discount =>
-    discount.code.toLowerCase().includes(searchTerm.toLowerCase())
+    discount.code && discount.code.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -95,22 +104,22 @@ export default function Discounts() {
                     />
                   </div>
                 </td>
-                <td>{discount.value}%</td>
-                <td>{discount.expiryDate}</td>
+                <td>{discount.amount}%</td>
+                <td>{discount.toDate}</td>
                 <td>
                   <div className={styles.usageWrapper}>
                     <div className={styles.usageBar}>
                       <div 
                         className={styles.usageProgress}
-                        style={{ width: `${(discount.usageCount / discount.usageLimit) * 100}%` }}
+                        style={{ width: `${(discount.usageCount / discount.maxUsage) * 100}%` }}
                       />
                     </div>
-                    <span>{discount.usageCount}/{discount.usageLimit}</span>
+                    <span>{discount.usageCount}/{discount.maxUsage}</span>
                   </div>
                 </td>
                 <td>
-                  <span className={`${styles.status} ${styles[discount.status.toLowerCase()]}`}>
-                    {discount.status}
+                  <span className={styles.statusBadge}>
+                    {discount.status || 'Active'}
                   </span>
                 </td>
                 <td>
@@ -134,6 +143,7 @@ export default function Discounts() {
           </tbody>
         </table>
       </div>
+
       <Modal 
         show={showModal} 
         onHide={() => setShowModal(false)}
@@ -159,8 +169,18 @@ export default function Discounts() {
               <Form.Label>Discount Value (%)</Form.Label>
               <Form.Control
                 type="number"
-                value={formData.value}
-                onChange={(e) => setFormData({...formData, value: e.target.value})}
+                value={formData.amount}
+                onChange={(e) => setFormData({...formData, amount: e.target.value})}
+                required
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>From Date</Form.Label>
+              <Form.Control
+                type="datetime-local"
+                value={formData.fromDate}
+                onChange={(e) => setFormData({...formData, fromDate: e.target.value})}
                 required
               />
             </Form.Group>
@@ -168,9 +188,9 @@ export default function Discounts() {
             <Form.Group className="mb-3">
               <Form.Label>Expiry Date</Form.Label>
               <Form.Control
-                type="date"
-                value={formData.expiryDate}
-                onChange={(e) => setFormData({...formData, expiryDate: e.target.value})}
+                type="datetime-local"
+                value={formData.toDate}
+                onChange={(e) => setFormData({...formData, toDate: e.target.value})}
                 required
               />
             </Form.Group>
@@ -179,8 +199,8 @@ export default function Discounts() {
               <Form.Label>Usage Limit</Form.Label>
               <Form.Control
                 type="number"
-                value={formData.usageLimit}
-                onChange={(e) => setFormData({...formData, usageLimit: e.target.value})}
+                value={formData.maxUsage}
+                onChange={(e) => setFormData({...formData, maxUsage: e.target.value})}
                 required
               />
             </Form.Group>

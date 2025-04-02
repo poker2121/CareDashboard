@@ -1,6 +1,6 @@
-import  { useState } from 'react'
-import { Row, Col, Card, Form, Button, Dropdown, Badge, Modal } from 'react-bootstrap';
-import { FaThLarge, FaList, FaFilter, FaSort, FaPlus, FaSearch, FaEdit, FaTrash } from 'react-icons/fa';
+import { useState, useEffect } from 'react';
+import { Row, Col, Card, Form, Button, Badge, Modal } from 'react-bootstrap';
+import { FaPlus, FaSearch, FaEdit, FaTrash } from 'react-icons/fa';
 import styles from './Products.module.css';
 import { useProductContext } from "../../context/ProductContext";
 import { Helmet } from 'react-helmet';
@@ -12,16 +12,46 @@ const Products = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
   const [sortBy, setSortBy] = useState("date");
+  const [filteredProducts, setFilteredProducts] = useState(products); // State جديدة للمنتجات المفلترة
   const [formData, setFormData] = useState({
     title: "",
     category: "",
     price: "",
     description: "",
     image: "",
-    status: "In Stock"
+    status: "In Stock",
   });
 
   const categories = ["Hair Care", "Skin Care", "Makeup", "Supplement"];
+
+  // useEffect عشان نتحكم في الفلترة والـ search
+  useEffect(() => {
+    const applyFilters = async () => {
+      try {
+        // 1. Search
+        let searchedProducts = products;
+        if (searchTerm.trim()) {
+          searchedProducts = await searchProducts(searchTerm);
+        }
+
+        // 2. Filter by category
+        let filteredByCategory = searchedProducts;
+        if (selectedCategory && selectedCategory !== "All Categories") {
+          filteredByCategory = await filterByCategory(selectedCategory);
+        }
+
+        // 3. Sort
+        const sortedProducts = sortProducts(sortBy, filteredByCategory);
+
+        setFilteredProducts(sortedProducts);
+      } catch (error) {
+        console.error("Error applying filters:", error);
+        setFilteredProducts(products); // Fallback to all products if there's an error
+      }
+    };
+
+    applyFilters();
+  }, [products, searchTerm, selectedCategory, sortBy, searchProducts, filterByCategory, sortProducts]);
 
   const handleShowModal = (product = null) => {
     if (product) {
@@ -44,17 +74,11 @@ const Products = () => {
     setShowModal(false);
   };
 
-  const filteredProducts = sortProducts(sortBy)
-    .filter(product => {
-      const matchesSearch = searchProducts(searchTerm).includes(product);
-      const matchesCategory = filterByCategory(selectedCategory).includes(product);
-      return matchesSearch && matchesCategory;
-    });
   return (
     <div className={styles.productsContainer}>
-       <Helmet> 
-                <title>The Stock</title>
-    </Helmet>
+      <Helmet>
+        <title>The Stock</title>
+      </Helmet>
       <div className={styles.header}>
         <div>
           <h2>Products</h2>
@@ -76,14 +100,14 @@ const Products = () => {
             className={styles.searchInput}
           />
         </div>
-        <select 
+        <select
           className={styles.categorySelect}
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
         >
           <option>All Categories</option>
           {categories.map(category => (
-            <option key={category}>{category}</option>
+            <option key={category} value={category}>{category}</option>
           ))}
         </select>
         <select
