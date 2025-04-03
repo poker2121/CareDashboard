@@ -1,4 +1,3 @@
-
 import { useState, useContext } from "react";
 import { Nav } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
@@ -38,12 +37,10 @@ const Sidebar = () => {
     { icon: <FaSignOutAlt size={17} />, text: "Logout", path: "/logout" }
   ];
 
-  const handleNavigation = async (path) => {
+  const handleNavigation = (path) => {
     if (path === "/logout") {
-      const result = await logout();
-      if (result.success) {
-        navigate("/login");
-      }
+      logout();
+      navigate("/login");
     } else {
       navigate(path);
     }
