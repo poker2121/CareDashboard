@@ -7,15 +7,15 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const { login, loading, user } = useContext(UserContext);
+  const { login, loading, isAuthenticated } = useContext(UserContext);
   const navigate = useNavigate();
 
-  // Redirect if already logged in
+  // إعادة التوجيه إذا كان المستخدم مسجل الدخول بالفعل
   useEffect(() => {
-    if (user) {
+    if (isAuthenticated) {
       navigate('/');
     }
-  }, [user, navigate]);
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
