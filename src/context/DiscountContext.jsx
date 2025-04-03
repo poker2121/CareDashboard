@@ -11,10 +11,10 @@ export function DiscountProvider({ children }) {
       try {
         const response = await couponesAPI.getAllCoupones();
         
-        // Check what format the data is coming in
-        console.log("API Response:", response);
+       
+       
         
-        // Handle different response structures
+      
         let discountData = [];
         
         if (response && response.data) {

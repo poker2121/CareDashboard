@@ -1,0 +1,298 @@
+/* Main container with gradient background */
+.loginContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7ff 0%, #e0e6ff 100%);
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Background decorative elements */
+.loginContainer::before,
+.loginContainer::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  z-index: 0;
+}
+
+.loginContainer::before {
+  width: 300px;
+  height: 300px;
+  background: linear-gradient(135deg, rgba(30, 42, 120, 0.05) 0%, rgba(30, 42, 120, 0.1) 100%);
+  top: -100px;
+  right: -100px;
+}
+
+.loginContainer::after {
+  width: 200px;
+  height: 200px;
+  background: linear-gradient(135deg, rgba(30, 42, 120, 0.05) 0%, rgba(30, 42, 120, 0.1) 100%);
+  bottom: -50px;
+  left: -50px;
+}
+
+/* Card styles with enhanced depth effect - WIDER WIDTH */
+.loginCard {
+  width: 550px; /* Increased from 450px */
+  padding: 3.5rem; /* Increased padding for better internal spacing */
+  background: white;
+  border-radius: 16px;
+  box-shadow: 
+    0 10px 30px rgba(54, 60, 140, 0.1),
+    0 1px 1px rgba(54, 60, 140, 0.06),
+    0 50px 100px -20px rgba(54, 60, 140, 0.15);
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Subtle card stripe decoration */
+.loginCard::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 8px;
+  height: 100%;
+  background: linear-gradient(to bottom, #1e2a78, #3949ab);
+  border-top-left-radius: 16px;
+  border-bottom-left-radius: 16px;
+}
+
+/* Header styling with improved typography */
+.loginHeader {
+  text-align: center;
+  margin-bottom: 3.5rem; /* Increased margin */
+  position: relative;
+}
+
+.loginHeader::after {
+  content: "";
+  position: absolute;
+  width: 80px; /* Increased width */
+  height: 4px;
+  background: linear-gradient(to right, #1e2a78, #3949ab);
+  bottom: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 2px;
+}
+
+.loginHeader h2 {
+  color: #1e2a78;
+  margin-bottom: 1rem; /* Increased margin */
+  font-size: 2.5rem; /* Increased size */
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  position: relative;
+  display: inline-block;
+}
+
+.loginHeader p {
+  color: #64748b;
+  font-size: 1.1rem; /* Slightly larger */
+  max-width: 400px; /* Increased max-width */
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Form styling */
+.loginForm {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem; /* Increased gap */
+  max-width: 90%; /* Control internal form width */
+  margin: 0 auto; /* Center the form */
+}
+
+/* Input group with floating label effect */
+.inputGroup {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.inputGroup label {
+  position: absolute;
+  left: 16px;
+  top: 14px;
+  font-size: 1rem;
+  color: #64748b;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.inputGroup input {
+  padding: 1.25rem 1rem 0.5rem;
+  height: 3.5rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: all 0.25s ease;
+  background-color: #f8fafc;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.inputGroup input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  background-color: white;
+  box-shadow: 
+    0 0 0 4px rgba(59, 130, 246, 0.1),
+    inset 0 2px 4px rgba(0, 0, 0, 0);
+}
+
+/* Floating label animation */
+.inputGroup input:focus + label,
+.inputGroup input:not(:placeholder-shown) + label {
+  transform: translateY(-12px) scale(0.85);
+  color: #1e2a78;
+  font-weight: 600;
+}
+
+.inputGroup input::placeholder {
+  color: transparent;
+}
+
+/* Button styling with gradient and animation */
+.loginButton {
+  background: linear-gradient(135deg, #1e2a78 0%, #3949ab 100%);
+  color: white;
+  border: none;
+  height: 3.5rem;
+  border-radius: 10px;
+  font-size: 1.1rem; /* Slightly larger */
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1.5rem; /* Increased margin */
+  letter-spacing: 0.5px;
+  box-shadow: 
+    0 4px 12px rgba(30, 42, 120, 0.2),
+    0 1px 3px rgba(30, 42, 120, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.loginButton::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transition: all 0.6s ease;
+}
+
+.loginButton:hover {
+  transform: translateY(-3px);
+  box-shadow: 
+    0 6px 16px rgba(30, 42, 120, 0.25),
+    0 2px 4px rgba(30, 42, 120, 0.15);
+}
+
+.loginButton:hover::before {
+  left: 100%;
+}
+
+.loginButton:active {
+  transform: translateY(-1px);
+}
+
+.loginButton:disabled {
+  background: linear-gradient(135deg, #a4acd2 0%, #b7c0e2 100%);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Error message styling */
+.errorMessage {
+  background-color: #fef2f2;
+  color: #b91c1c;
+  padding: 1rem 1.25rem;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border-left: 4px solid #ef4444;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.1);
+  animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes shake {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+  40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+/* Forgot password link - optional */
+.forgotPassword {
+  text-align: right;
+  margin-top: -1.5rem;
+  margin-bottom: 1rem;
+}
+
+.forgotPassword a {
+  color: #1e2a78;
+  font-size: 0.9rem;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.forgotPassword a:hover {
+  color: #3949ab;
+  text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .loginCard {
+    width: 100%;
+    padding: 1rem 1.75rem;
+    margin: 1rem;
+  }
+  
+  .loginHeader h2 {
+    font-size: 2rem;
+  }
+  
+  .loginHeader p {
+    font-size: 1rem;
+  }
+  
+  .inputGroup input {
+    padding: 1.2rem 0.9rem 0.4rem;
+    height: 3.2rem;
+  }
+  
+  .loginButton {
+    height: 3.2rem;
+    font-size: 1rem;
+  }
+}
+
+/* For tablets and small laptops */
+@media (min-width: 601px) and (max-width: 1024px) {
+  .loginCard {
+    width: 500px;
+    padding: 3rem;
+  }
+}

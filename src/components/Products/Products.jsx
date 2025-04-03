@@ -24,7 +24,6 @@ const Products = () => {
 
   const categories = ["Hair Care", "Skin Care", "Makeup", "Supplement"];
 
-  // useEffect عشان نتحكم في الفلترة والـ search
   useEffect(() => {
     const applyFilters = async () => {
       try {

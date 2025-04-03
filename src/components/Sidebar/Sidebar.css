@@ -171,3 +171,11 @@
     display: block;
   }
 }
+
+/* Add this to your existing Sidebar.css file */
+.sidebar-blur {
+  filter: blur(3px);
+  pointer-events: none;
+  opacity: 0.7;
+  transition: all 0.3s ease;
+}
