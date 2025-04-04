@@ -9,16 +9,17 @@ import ProfileAdmin from './components/ProfileAdmin/ProfileAdmin';
 import Orders from './components/Orders/Orders';
 import Customers from './components/Customers/Customers';
 import Discounts from './components/Discounts/Discounts';
+import Login from './components/Login/Login';
 import BlogProvider from './context/BlogContext';
 import ProductProvider from './context/ProductContext';
-import Login from './components/Login/Login';
 import { DiscountProvider } from './context/DiscountContext';
 import { CustomerProvider } from './context/CustomerContext';
 import { OrderProvider } from './context/OrderContext';
 import { UserProvider } from './context/UserContext';
-
+import { CategoriesProvider } from './context/CategoriesContext';
 function App() {
   return (
+    <CategoriesProvider>
     <UserProvider>
     <OrderProvider>
     <CustomerProvider>
@@ -51,6 +52,7 @@ function App() {
     </CustomerProvider>
     </OrderProvider>
     </UserProvider>
+    </CategoriesProvider>
   );
 }
 

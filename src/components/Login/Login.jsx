@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import  { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../context/UserContext';
 import styles from './Login.module.css';
@@ -10,7 +10,7 @@ const Login = () => {
   const { login, loading, isAuthenticated } = useContext(UserContext);
   const navigate = useNavigate();
 
-  // إعادة التوجيه إذا كان المستخدم مسجل الدخول بالفعل
+
   useEffect(() => {
     if (isAuthenticated) {
       navigate('/');

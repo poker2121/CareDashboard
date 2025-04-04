@@ -1,5 +1,3 @@
-// تعديل UserContext.js
-
 import React, { createContext, useState, useEffect } from 'react';
 import { authAPI } from '../services/api/auth.api';
 import Swal from 'sweetalert2';
@@ -13,13 +11,13 @@ export const UserProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    // التحقق من تسجيل دخول المستخدم ومن صلاحية التوكن
+  
     const checkAuth = async () => {
       try {
         const token = localStorage.getItem('token');
         const storedUser = localStorage.getItem('user');
         
-        // إذا لم يكن هناك توكن أو بيانات مستخدم، فالمستخدم غير مسجل
+      
         if (!token || !storedUser) {
           setUser(null);
           setIsAuthenticated(false);
@@ -27,19 +25,19 @@ export const UserProvider = ({ children }) => {
           return;
         }
 
-        // التحقق من صلاحية التوكن عن طريق API
+     
         try {
-          // يمكنك إضافة دالة جديدة في authAPI للتحقق من صلاحية التوكن
+   
           const response = await authAPI.validateToken(token);
           if (response.data.valid) {
             setUser(JSON.parse(storedUser));
             setIsAuthenticated(true);
           } else {
-            // إذا كان التوكن غير صالح، قم بتسجيل الخروج
+            
             clearAuthData();
           }
         } catch (err) {
-          // في حالة وجود خطأ في التحقق من التوكن، قم بتسجيل الخروج
+      
           console.error('Token validation error:', err);
           clearAuthData();
         }
@@ -54,7 +52,6 @@ export const UserProvider = ({ children }) => {
     checkAuth();
   }, []);
 
-  // دالة لمسح بيانات المصادقة
   const clearAuthData = () => {
     setUser(null);
     setIsAuthenticated(false);
@@ -66,20 +63,32 @@ export const UserProvider = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
+      
+      // Check if the email is admin@gmail.com
+      if (credentials.email !== 'admin@gmail.com') {
+        // Show error for non-admin email
+        Swal.fire({
+          icon: 'error',
+          title: 'Access Denied',
+          text: 'You are not allowed to access this dashboard.',
+        });
+        return { success: false, error: 'You are not allowed to access this dashboard.' };
+      }
+      
       const response = await authAPI.login(credentials);
       const userData = response.data;
       
-      // حفظ بيانات المستخدم والتوكن
+     
       setUser(userData);
       setIsAuthenticated(true);
       localStorage.setItem('user', JSON.stringify(userData));
       
-      // إذا أعاد API توكن، قم بتخزينه
+    
       if (userData.token) {
         localStorage.setItem('token', userData.token);
       }
       
-      // عرض رسالة نجاح
+      
       Swal.fire({
         icon: 'success',
         title: 'Login Successful',
@@ -93,7 +102,7 @@ export const UserProvider = ({ children }) => {
       const errorMessage = err.response?.data?.message || 'Login failed';
       setError(errorMessage);
       
-      // عرض رسالة خطأ
+    
       Swal.fire({
         icon: 'error',
         title: 'Login Failed',
@@ -108,7 +117,7 @@ export const UserProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      // عرض مربع تأكيد
+  
       const result = await Swal.fire({
         title: 'Logout',
         text: 'Are you sure you want to logout?',
@@ -122,13 +131,13 @@ export const UserProvider = ({ children }) => {
       if (result.isConfirmed) {
         setLoading(true);
         
-        // استدعاء API تسجيل الخروج إذا كان المستخدم مسجلاً
+        
         if (user) {
           try {
             await authAPI.logout();
           } catch (error) {
             console.error('Logout API error:', error);
-            // الاستمرار في تسجيل الخروج محلياً حتى لو فشل API
+           
           }
         }
         
@@ -156,7 +165,7 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  // التحقق من صلاحية التوكن بشكل دوري (اختياري)
+ 
   useEffect(() => {
     if (isAuthenticated) {
       const tokenCheckInterval = setInterval(async () => {
@@ -178,13 +187,13 @@ export const UserProvider = ({ children }) => {
             console.error('Token validation error:', err);
           }
         }
-      }, 15 * 60 * 1000); // التحقق كل 15 دقيقة مثلاً
+      }, 15 * 60 * 1000);
 
       return () => clearInterval(tokenCheckInterval);
     }
   }, [isAuthenticated]);
 
-  // التحقق من وجود دور المسؤول
+ 
   const isAdmin = user && user.role === 'Admin';
 
   return (

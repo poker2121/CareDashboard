@@ -1,15 +1,8 @@
-import { useState, useEffect } from "react";
+// ✅ الكود المحسن للملف الأول (Blogs.jsx)
+
+import { useState, useEffect, useMemo } from "react";
 import { Button, Form, Row, Col, Modal, Spinner } from "react-bootstrap";
-import {
-  FaPlus,
-  FaEdit,
-  FaTrash,
-  FaSearch,
-  FaEye,
-  FaComment,
-  FaCalendarAlt,
-  FaUser,
-} from "react-icons/fa";
+import { FaPlus, FaEdit, FaTrash, FaSearch, FaCalendarAlt, FaUser } from "react-icons/fa";
 import { useBlogContext } from "../../context/BlogContext";
 import styles from "./Blogs.module.css";
 import { Helmet } from "react-helmet";
@@ -19,99 +12,61 @@ const Blogs = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingBlog, setEditingBlog] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All Categories");
   const [isLoading, setIsLoading] = useState(true);
   const [formData, setFormData] = useState({
     title: "",
-    category: "",
     author: "",
     excerpt: "",
-    image: "",
+    image: null,
   });
 
-  const categories = ["Hair Care", "Supplement", "Makeup", "Skin Care"];
-
-  // Simulate loading 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 800);
+    const timer = setTimeout(() => setIsLoading(false), 800);
     return () => clearTimeout(timer);
   }, []);
 
   const handleShowModal = (blog = null) => {
-    if (blog) {
-      setEditingBlog(blog);
-      setFormData(blog);
-    } else {
-      setEditingBlog(null);
-      setFormData({
-        title: "",
-        category: "",
-        author: "",
-        excerpt: "",
-        image: "",
-      });
-    }
+    setEditingBlog(blog);
+    setFormData({
+      title: blog?.title || "",
+      author: blog?.author || "",
+      excerpt: blog?.excerpt || "",
+      image: null,
+    });
     setShowModal(true);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    // Create a new date object to get a fresh timestamp
-    const currentDate = new Date().toLocaleDateString();
-
     if (editingBlog) {
-      updateBlog({ ...formData, id: editingBlog.id, date: editingBlog.date });
+      updateBlog(editingBlog.id, formData);
     } else {
-      addBlog({
-        ...formData,
-        date: currentDate,
-        views: Math.floor(Math.random() * 100), // Sample random data for demo
-        comments: Math.floor(Math.random() * 10), // Sample random data for demo
-      });
+      addBlog(formData);
     }
     setShowModal(false);
   };
 
-  const handleDelete = (id) => deleteBlog(id);
-
-  // Calculate filtered blogs based on search and category
-  const filteredBlogs = blogs.filter((blog) => {
-    const matchesSearch =
-      blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      blog.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory =
-      selectedCategory === "All Categories" ||
-      blog.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
-
-  // Reset search and filter
-  const handleReset = () => {
-    setSearchTerm("");
-    setSelectedCategory("All Categories");
-  };
+  const filteredBlogs = useMemo(() => {
+    if (!Array.isArray(blogs)) return [];
+    return blogs.filter(({ title = "", excerpt = "" }) =>
+      [title, excerpt].some((field) =>
+        field.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    );
+  }, [blogs, searchTerm]);
 
   return (
-   
     <div className={styles.blogsContainer}>
-       <Helmet> 
-                <title>Blogs & Posts</title>      
-       </Helmet>
+      <Helmet>
+        <title>Blogs & Posts</title>
+      </Helmet>
+
       <div className={styles.header}>
         <div>
           <h2>Blog Posts</h2>
-          <p className={styles.subtitle}>
-            Manage and publish your blog content
-          </p>
+          <p className={styles.subtitle}>Manage and publish your blog content</p>
         </div>
-        <Button
-          variant="primary"
-          className={styles.createButton}
-          onClick={() => handleShowModal()}
-        >
+        <Button variant="primary" className={styles.createButton} onClick={() => handleShowModal()}>
           <FaPlus /> Create Post
         </Button>
       </div>
@@ -127,41 +82,23 @@ const Blogs = () => {
             className={styles.searchInput}
           />
           {searchTerm && (
-            <button
-              className={styles.clearSearch}
-              onClick={() => setSearchTerm("")}
-            >
-              ×
-            </button>
+            <button className={styles.clearSearch} onClick={() => setSearchTerm("")}>×</button>
           )}
         </div>
-
-        <select
-          className={styles.categorySelect}
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
-        >
-          <option>All Categories</option>
-          {categories.map((category) => (
-            <option key={category}>{category}</option>
-          ))}
-        </select>
       </div>
 
-      {(searchTerm || selectedCategory !== "All Categories") && (
+      {searchTerm && (
         <div className={styles.activeFilters}>
           <p>
             {filteredBlogs.length === 0
               ? "No results found"
-              : `${filteredBlogs.length} result${
-                  filteredBlogs.length !== 1 ? "s" : ""
-                } found`}
+              : `${filteredBlogs.length} result${filteredBlogs.length !== 1 ? "s" : ""} found`}
           </p>
           <Button
             variant="outline-secondary"
             size="sm"
             className={styles.resetButton}
-            onClick={handleReset}
+            onClick={() => setSearchTerm("")}
           >
             Clear Filters
           </Button>
@@ -173,8 +110,7 @@ const Blogs = () => {
           <Spinner animation="border" role="status" />
           <p>Loading blogs...</p>
         </div>
-      ) : filteredBlogs.length === 0 &&
-        !(searchTerm || selectedCategory !== "All Categories") ? (
+      ) : filteredBlogs.length === 0 ? (
         <div className={styles.emptyState}>
           <div className={styles.emptyStateContent}>
             <img
@@ -182,12 +118,8 @@ const Blogs = () => {
               alt="No Content"
               className={styles.emptyStateImage}
             />
-
             <h3>No Blog Posts Yet</h3>
-            <p>
-              Start creating your blog content to engage with your audience.
-            </p>
-           
+            <p>Start creating your blog content to engage with your audience.</p>
           </div>
         </div>
       ) : (
@@ -195,11 +127,7 @@ const Blogs = () => {
           {filteredBlogs.map((blog) => (
             <div key={blog.id} className={styles.blogItem}>
               <div className={styles.blogImage}>
-                <img
-                  src={blog.image || "https://via.placeholder.com/300"}
-                  alt={blog.title}
-                />
-                <div className={styles.categoryBadge}>{blog.category}</div>
+                <img src={blog.image || "https://placehold.co/300x200"} alt={blog.title || "Blog Image"} />
               </div>
 
               <div className={styles.blogContent}>
@@ -208,35 +136,14 @@ const Blogs = () => {
 
                 <div className={styles.blogMeta}>
                   <div className={styles.metaInfo}>
-                    <span className={styles.metaItem}>
-                      <FaUser /> {blog.author}
-                    </span>
-                    <span className={styles.metaItem}>
-                      <FaCalendarAlt /> {blog.date}
-                    </span>
-                    <span className={styles.metaItem}>
-                      <FaEye /> {blog.views || 0} views
-                    </span>
-                    <span className={styles.metaItem}>
-                      <FaComment /> {blog.comments || 0} comments
-                    </span>
+                    <span className={styles.metaItem}><FaUser /> {blog.author}</span>
+                    <span className={styles.metaItem}><FaCalendarAlt /> {blog.date}</span>
                   </div>
-
                   <div className={styles.blogActions}>
-                    <Button
-                      variant="outline-primary"
-                      size="sm"
-                      className={styles.actionButton}
-                      onClick={() => handleShowModal(blog)}
-                    >
+                    <Button variant="outline-primary" size="sm" className={styles.actionButton} onClick={() => handleShowModal(blog)}>
                       <FaEdit /> Edit
                     </Button>
-                    <Button
-                      variant="outline-danger"
-                      size="sm"
-                      className={styles.actionButton}
-                      onClick={() => handleDelete(blog.id)}
-                    >
+                    <Button variant="outline-danger" size="sm" className={styles.actionButton} onClick={() => deleteBlog(blog.id)}>
                       <FaTrash /> Delete
                     </Button>
                   </div>
@@ -247,17 +154,9 @@ const Blogs = () => {
         </div>
       )}
 
-      <Modal
-        show={showModal}
-        onHide={() => setShowModal(false)}
-        size="lg"
-        centered
-        className={styles.blogModal}
-      >
+      <Modal show={showModal} onHide={() => setShowModal(false)} size="lg" centered className={styles.blogModal}>
         <Modal.Header closeButton className={styles.modalHeader}>
-          <Modal.Title>
-            {editingBlog ? "Edit Blog Post" : "Create New Blog Post"}
-          </Modal.Title>
+          <Modal.Title>{editingBlog ? "Edit Blog Post" : "Create New Blog Post"}</Modal.Title>
         </Modal.Header>
         <Modal.Body className={styles.modalBody}>
           <Form onSubmit={handleSubmit}>
@@ -268,88 +167,50 @@ const Blogs = () => {
                   <Form.Control
                     type="text"
                     required
-                    placeholder="Enter blog title"
                     value={formData.title}
-                    onChange={(e) =>
-                      setFormData({ ...formData, title: e.target.value })
-                    }
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    placeholder="Enter blog title"
                     className={styles.formControl}
                   />
                 </Form.Group>
-
-                <Row>
-                  <Col md={6}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>Category</Form.Label>
-                      <Form.Select
-                        required
-                        value={formData.category}
-                        onChange={(e) =>
-                          setFormData({ ...formData, category: e.target.value })
-                        }
-                        className={styles.formControl}
-                      >
-                        <option value="">Select Category</option>
-                        {categories.map((category) => (
-                          <option key={category} value={category}>
-                            {category}
-                          </option>
-                        ))}
-                      </Form.Select>
-                    </Form.Group>
-                  </Col>
-                  <Col md={6}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>Author</Form.Label>
-                      <Form.Control
-                        type="text"
-                        required
-                        placeholder="Enter author name"
-                        value={formData.author}
-                        onChange={(e) =>
-                          setFormData({ ...formData, author: e.target.value })
-                        }
-                        className={styles.formControl}
-                      />
-                    </Form.Group>
-                  </Col>
-                </Row>
-
+                <Form.Group className="mb-3">
+                  <Form.Label>Author</Form.Label>
+                  <Form.Control
+                    type="text"
+                    required
+                    value={formData.author}
+                    onChange={(e) => setFormData({ ...formData, author: e.target.value })}
+                    placeholder="Enter author name"
+                    className={styles.formControl}
+                  />
+                </Form.Group>
                 <Form.Group className="mb-3">
                   <Form.Label>Excerpt</Form.Label>
                   <Form.Control
                     as="textarea"
                     rows={5}
                     required
-                    placeholder="Write a brief excerpt for your blog post"
                     value={formData.excerpt}
-                    onChange={(e) =>
-                      setFormData({ ...formData, excerpt: e.target.value })
-                    }
+                    onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
+                    placeholder="Write a brief excerpt for your blog post"
                     className={styles.formControl}
                   />
                 </Form.Group>
               </Col>
-
               <Col md={4}>
                 <Form.Group className="mb-3">
-                  <Form.Label>Image URL</Form.Label>
+                  <Form.Label>Image</Form.Label>
                   <Form.Control
-                    type="url"
-                   
-                    placeholder="Enter image URL"
-                    value={formData.image}
-                    onChange={(e) =>
-                      setFormData({ ...formData, image: e.target.value })
-                    }
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setFormData({ ...formData, image: e.target.files[0] })}
                     className={styles.formControl}
                   />
                 </Form.Group>
-
                 <div className={styles.imagePreviewContainer}>
                   {formData.image ? (
                     <img
-                      src={formData.image}
+                      src={URL.createObjectURL(formData.image)}
                       alt="Preview"
                       className={styles.imagePreview}
                     />
@@ -361,20 +222,11 @@ const Blogs = () => {
                 </div>
               </Col>
             </Row>
-
             <div className={styles.modalFooter}>
-              <Button
-                variant="secondary"
-                onClick={() => setShowModal(false)}
-                className={styles.cancelButton}
-              >
+              <Button variant="secondary" onClick={() => setShowModal(false)} className={styles.cancelButton}>
                 Cancel
               </Button>
-              <Button
-                variant="primary"
-                type="submit"
-                className={styles.submitButton}
-              >
+              <Button variant="primary" type="submit" className={styles.submitButton}>
                 {editingBlog ? "Update Blog" : "Add Blog"}
               </Button>
             </div>
