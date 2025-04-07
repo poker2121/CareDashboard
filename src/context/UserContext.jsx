@@ -66,7 +66,7 @@ export const UserProvider = ({ children }) => {
       
       // Check if the email is admin@gmail.com
       if (credentials.email !== 'admin@gmail.com') {
-        // Show error for non-admin email
+       
         Swal.fire({
           icon: 'error',
           title: 'Access Denied',

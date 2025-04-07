@@ -21,7 +21,7 @@ export function OrderProvider({ children }) {
       paymentMethod: "Credit Card",
       shippingAddress: "123 Main St, City, Country"
     },
-    // Add more sample orders...
+  
   ]);
 
   return (

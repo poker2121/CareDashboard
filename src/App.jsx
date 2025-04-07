@@ -30,7 +30,7 @@ function App() {
           <Routes>
             <Route path="/login" element={<Login />} />
             
-            {/* Layout component handles protected route logic internally */}
+           
             <Route path="/" element={<Layout />}>
               <Route index element={<Dashboard />} />
               <Route path="categories" element={<Categories />} />
@@ -42,7 +42,7 @@ function App() {
               <Route path="profile-admin" element={<ProfileAdmin />} />
             </Route>
             
-            {/* Redirect any unknown routes to login */}
+           
             <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
         </BrowserRouter>

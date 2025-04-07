@@ -33,7 +33,8 @@ export const CategoriesProvider = ({ children }) => {
   const createCategory = async (categoryData) => {
     try {
       const newCategory = await categoriesAPI.createCategory(categoryData);
-      const updatedCategories = [...categories, newCategory];
+      // Ensure categories is an array before spreading
+      const updatedCategories = Array.isArray(categories) ? [...categories, newCategory] : [newCategory];
       setCategories(updatedCategories);
       updateLocalStorage(updatedCategories);
       return newCategory;
@@ -47,7 +48,10 @@ export const CategoriesProvider = ({ children }) => {
   const updateCategory = async (id, categoryData) => {
     try {
       const updatedCategory = await categoriesAPI.updateCategory(id, categoryData);
-      const updatedCategories = categories.map(cat => cat.id === id ? updatedCategory : cat);
+      // Ensure categories is an array before mapping
+      const updatedCategories = Array.isArray(categories) 
+        ? categories.map(cat => cat.id === id ? updatedCategory : cat)
+        : [updatedCategory];
       setCategories(updatedCategories);
       updateLocalStorage(updatedCategories);
       return updatedCategory;

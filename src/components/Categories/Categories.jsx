@@ -2,10 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Row, Col, Card, Button, Spinner, Modal, Form } from 'react-bootstrap';
 import { 
-  FaBox, 
-  FaShoppingBag, 
-  FaSprayCan, 
-  FaPills,
+  FaBox,
   FaEllipsisH,
   FaArrowUp,
   FaPlus,
@@ -26,85 +23,53 @@ const Categories = () => {
   const [currentCategory, setCurrentCategory] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
-    totalProducts: 0,
-    activeProducts: 0,
-    growth: '+0%'
   });
   const [categoryImage, setCategoryImage] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
   const fileInputRef = useRef(null);
   const [menuOpen, setMenuOpen] = useState(null);
 
-  // Map API data to UI format
+ 
   useEffect(() => {
-    if (categories && categories.length > 0) {
-      const iconMap = {
-        'Skin Care': <FaSprayCan />,
-        'Hair Care': <FaShoppingBag />,
-        'Supplements': <FaPills />,
-        'Makeup': <FaBox />,
-        // Default icon for other categories
-        'default': <FaBox />
-      };
+    console.log('Categories data:', categories);
+    
 
-      const colorMap = {
-        'Skin Care': '#4f46e5',
-        'Hair Care': '#06b6d4',
-        'Supplements': '#10b981',
-        'Makeup': '#f59e0b',
-        // Default color for other categories
-        'default': '#6b7280'
-      };
-
-      const mappedCategories = categories.map(category => ({
+    let categoriesArray = [];
+    
+    if (Array.isArray(categories)) {
+      // Check if it's an error response
+      if (categories.length > 0 && categories[0].message === 'Catch error' && categories[0].err === 'jwt expired') {
+        console.log('JWT token expired. User needs to log in again.');
+        // You might want to redirect to login page or refresh token here
+      } else {
+       
+        categoriesArray = categories;
+      }
+    } else if (categories && categories.categories && Array.isArray(categories.categories)) {
+   
+      categoriesArray = categories.categories;
+    }
+    
+    if (categoriesArray.length > 0) {
+      const mappedCategories = categoriesArray.map(category => ({
         id: category.id,
         title: category.name,
-        icon: iconMap[category.name] || iconMap.default,
-        totalProducts: category.totalProducts || 0,
-        activeProducts: category.activeProducts || 0,
-        growth: category.growth || '+0%',
-        color: colorMap[category.name] || colorMap.default
+        icon: <FaBox />,
+        image: category.image
       }));
 
       setCategoryCards(mappedCategories);
     } else {
-      // Fallback to static data if no API data is available
-      setCategoryCards([
-        {
-          title: 'Skin Care',
-          icon: <FaSprayCan />,
-          totalProducts: 45,
-          activeProducts: 38,
-          growth: '+12.5%',
-          color: '#4f46e5'
-        },
-        {
-          title: 'Hair Care',
-          icon: <FaShoppingBag />,
-          totalProducts: 32,
-          activeProducts: 28,
-          growth: '+8.2%',
-          color: '#06b6d4'
-        },
-        {
-          title: 'Supplements',
-          icon: <FaPills />,
-          totalProducts: 28,
-          activeProducts: 25,
-          growth: '+15.3%',
-          color: '#10b981'
-        },
-        {
-          title: 'Makeup',
-          icon: <FaBox />,
-          totalProducts: 35,
-          activeProducts: 30,
-          growth: '+10.7%',
-          color: '#f59e0b'
-        }
-      ]);
+      // If no categories are available, set empty array and log for debugging
+      console.log('No categories available or categories array is empty');
+      setCategoryCards([]);
+      
+      
+      if (!loading) {
+        fetchCategories();
+      }
     }
-  }, [categories]);
+  }, [categories, loading, fetchCategories]);
 
   const handleRefresh = () => {
     fetchCategories();
@@ -133,9 +98,6 @@ const Categories = () => {
   const handleAddCategory = () => {
     setFormData({
       name: '',
-      totalProducts: 0,
-      activeProducts: 0,
-      growth: '+0%'
     });
     setCategoryImage(null);
     setImagePreview('');
@@ -146,12 +108,9 @@ const Categories = () => {
     setCurrentCategory(category);
     setFormData({
       name: category.title,
-      totalProducts: category.totalProducts,
-      activeProducts: category.activeProducts,
-      growth: category.growth
     });
     setCategoryImage(null);
-    setImagePreview('');
+    setImagePreview(category.image || '');
     setShowEditModal(true);
     setMenuOpen(null);
   };
@@ -171,17 +130,6 @@ const Categories = () => {
       if (categoryImage) {
         formDataToSend.append('image', categoryImage);
       }
-      
-      // Optional fields - only add if your API supports them
-      if (formData.totalProducts) {
-        formDataToSend.append('totalProducts', formData.totalProducts);
-      }
-      if (formData.activeProducts) {
-        formDataToSend.append('activeProducts', formData.activeProducts);
-      }
-      if (formData.growth) {
-        formDataToSend.append('growth', formData.growth);
-      }
 
       await createCategory(formDataToSend);
       setShowAddModal(false);
@@ -199,17 +147,6 @@ const Categories = () => {
       
       if (categoryImage) {
         formDataToSend.append('image', categoryImage);
-      }
-      
-      // Optional fields - only add if your API supports them
-      if (formData.totalProducts) {
-        formDataToSend.append('totalProducts', formData.totalProducts);
-      }
-      if (formData.activeProducts) {
-        formDataToSend.append('activeProducts', formData.activeProducts);
-      }
-      if (formData.growth) {
-        formDataToSend.append('growth', formData.growth);
       }
 
       await updateCategory(currentCategory.id, formDataToSend);
@@ -373,37 +310,6 @@ const Categories = () => {
                 )}
               </div>
             </Form.Group>
-            
-            <Form.Group className="mb-3">
-              <Form.Label>Total Products</Form.Label>
-              <Form.Control 
-                type="number" 
-                name="totalProducts" 
-                value={formData.totalProducts} 
-                onChange={handleInputChange} 
-              />
-            </Form.Group>
-            
-            <Form.Group className="mb-3">
-              <Form.Label>Active Products</Form.Label>
-              <Form.Control 
-                type="number" 
-                name="activeProducts" 
-                value={formData.activeProducts} 
-                onChange={handleInputChange} 
-              />
-            </Form.Group>
-            
-            <Form.Group className="mb-3">
-              <Form.Label>Growth</Form.Label>
-              <Form.Control 
-                type="text" 
-                name="growth" 
-                value={formData.growth} 
-                onChange={handleInputChange} 
-                placeholder="e.g. +10.5%" 
-              />
-            </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer>
@@ -416,7 +322,7 @@ const Categories = () => {
         </Modal.Footer>
       </Modal>
 
-      {/* Edit Category Modal - Update similar to Add Modal */}
+      {/* Edit Category Modal - Simplified */}
       <Modal show={showEditModal} onHide={() => setShowEditModal(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title>Edit Category</Modal.Title>
@@ -459,37 +365,6 @@ const Categories = () => {
                 )}
               </div>
             </Form.Group>
-            
-            <Form.Group className="mb-3">
-              <Form.Label>Total Products</Form.Label>
-              <Form.Control 
-                type="number" 
-                name="totalProducts" 
-                value={formData.totalProducts} 
-                onChange={handleInputChange} 
-              />
-            </Form.Group>
-            
-            <Form.Group className="mb-3">
-              <Form.Label>Active Products</Form.Label>
-              <Form.Control 
-                type="number" 
-                name="activeProducts" 
-                value={formData.activeProducts} 
-                onChange={handleInputChange} 
-              />
-            </Form.Group>
-            
-            <Form.Group className="mb-3">
-              <Form.Label>Growth</Form.Label>
-              <Form.Control 
-                type="text" 
-                name="growth" 
-                value={formData.growth} 
-                onChange={handleInputChange} 
-                placeholder="e.g. +10.5%" 
-              />
-            </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer>
@@ -502,7 +377,7 @@ const Categories = () => {
         </Modal.Footer>
       </Modal>
 
-      {/* Delete Category Modal - Keep as is */}
+      {/* Delete Category Modal remains the same */}
       <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title>Delete Category</Modal.Title>

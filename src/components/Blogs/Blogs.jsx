@@ -1,5 +1,3 @@
-// ✅ الكود المحسن للملف الأول (Blogs.jsx)
-
 import { useState, useEffect, useMemo } from "react";
 import { Button, Form, Row, Col, Modal, Spinner } from "react-bootstrap";
 import { FaPlus, FaEdit, FaTrash, FaSearch, FaCalendarAlt, FaUser } from "react-icons/fa";
@@ -19,6 +17,11 @@ const Blogs = () => {
     excerpt: "",
     image: null,
   });
+  const [previewUrl, setPreviewUrl] = useState(null);
+
+  useEffect(() => {
+    setIsLoading(Array.isArray(blogs) && blogs.length === 0);
+  }, [blogs]);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 800);
@@ -27,23 +30,64 @@ const Blogs = () => {
 
   const handleShowModal = (blog = null) => {
     setEditingBlog(blog);
+    
+    
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+      setPreviewUrl(null);
+    }
+    
     setFormData({
       title: blog?.title || "",
       author: blog?.author || "",
       excerpt: blog?.excerpt || "",
       image: null,
     });
+    
     setShowModal(true);
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+   
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+      
+      const newPreviewUrl = URL.createObjectURL(file);
+      setPreviewUrl(newPreviewUrl);
+      setFormData({ ...formData, image: file });
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log("Submitting form data:", formData);
+    
     if (editingBlog) {
       updateBlog(editingBlog.id, formData);
     } else {
       addBlog(formData);
     }
+    
     setShowModal(false);
+  };
+
+  const getImageUrl = (blog) => {
+    if (!blog || !blog.image) return "https://placehold.co/300x200";
+  
+    if (typeof blog.image === 'string') {
+      return blog.image;
+    } else if (blog.image instanceof File) {
+      return URL.createObjectURL(blog.image);
+    } else if (blog.image instanceof Blob) {
+    
+      return URL.createObjectURL(blog.image);
+    }
+    
+ 
+    return "https://placehold.co/300x200";
   };
 
   const filteredBlogs = useMemo(() => {
@@ -127,7 +171,7 @@ const Blogs = () => {
           {filteredBlogs.map((blog) => (
             <div key={blog.id} className={styles.blogItem}>
               <div className={styles.blogImage}>
-                <img src={blog.image || "https://placehold.co/300x200"} alt={blog.title || "Blog Image"} />
+                <img src={getImageUrl(blog)} alt={blog.title || "Blog Image"} />
               </div>
 
               <div className={styles.blogContent}>
@@ -203,15 +247,22 @@ const Blogs = () => {
                   <Form.Control
                     type="file"
                     accept="image/*"
-                    onChange={(e) => setFormData({ ...formData, image: e.target.files[0] })}
+                    onChange={handleImageChange}
                     className={styles.formControl}
                   />
+                  <small className="text-muted">Select a new image{editingBlog ? " or keep the existing one" : ""}</small>
                 </Form.Group>
                 <div className={styles.imagePreviewContainer}>
-                  {formData.image ? (
+                  {previewUrl ? (
                     <img
-                      src={URL.createObjectURL(formData.image)}
+                      src={previewUrl}
                       alt="Preview"
+                      className={styles.imagePreview}
+                    />
+                  ) : editingBlog && editingBlog.image ? (
+                    <img
+                      src={getImageUrl(editingBlog)}
+                      alt="Current Image"
                       className={styles.imagePreview}
                     />
                   ) : (

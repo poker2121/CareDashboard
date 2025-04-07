@@ -6,20 +6,20 @@ const DiscountContext = createContext();
 export function DiscountProvider({ children }) {
   const STORAGE_KEY = 'discounts';
   const FETCH_TIME_KEY = 'lastFetchedTime';
-  const CACHE_DURATION = 60 * 60 * 1000; // ساعة واحدة
+  const CACHE_DURATION = 60 * 60 * 1000; 
 
-  // ✅ تحميل البيانات من localStorage عند بدء التشغيل
+  
   const [discounts, setDiscounts] = useState(() => {
     const savedDiscounts = localStorage.getItem(STORAGE_KEY);
     return savedDiscounts ? JSON.parse(savedDiscounts) : [];
   });
 
-  // ✅ حفظ البيانات تلقائيًا في localStorage عند تغييرها
+ 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(discounts));
   }, [discounts]);
 
-  // ✅ استرجاع البيانات من API فقط إذا كانت قديمة
+
   useEffect(() => {
     async function fetchDiscounts() {
       try {
@@ -27,8 +27,8 @@ export function DiscountProvider({ children }) {
         const now = new Date().getTime();
 
         if (lastFetched && now - new Date(lastFetched).getTime() < CACHE_DURATION) {
-          console.log('✅ Using cached discounts');
-          return; // استخدام البيانات المخزنة بدون إعادة الجلب
+     
+          return; 
         }
 
         console.log('🔄 Fetching discounts from API...');
@@ -67,7 +67,7 @@ export function DiscountProvider({ children }) {
     fetchDiscounts();
   }, []);
 
-  // ✅ إضافة خصم جديد
+ 
   const addDiscount = async (newDiscount) => {
     try {
       const response = await couponesAPI.createCoupone(newDiscount);
@@ -88,7 +88,7 @@ export function DiscountProvider({ children }) {
     }
   };
 
-  // ✅ تحديث الخصم
+  
   const updateDiscount = async (updatedDiscount) => {
     try {
       const response = await couponesAPI.updateCoupone(updatedDiscount.id, updatedDiscount);
@@ -105,7 +105,7 @@ export function DiscountProvider({ children }) {
     }
   };
 
-  // ✅ حذف الخصم
+ 
   const deleteDiscount = async (id) => {
     try {
       const response = await couponesAPI.deleteCoupone(id);
