@@ -17,42 +17,44 @@ import { CustomerProvider } from './context/CustomerContext';
 import { OrderProvider } from './context/OrderContext';
 import { UserProvider } from './context/UserContext';
 import { CategoriesProvider } from './context/CategoriesContext';
+import { ProtectedRoute } from './components/ProtectedRoute/ProtectedRoute';
+import { ToastContainer } from 'react-toastify';
+
 function App() {
   return (
-    <CategoriesProvider>
     <UserProvider>
-    <OrderProvider>
-    <CustomerProvider>
-    <DiscountProvider>
-    <BlogProvider>
-      <ProductProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            
-           
-            <Route path="/" element={<Layout />}>
-              <Route index element={<Dashboard />} />
-              <Route path="categories" element={<Categories />} />
-              <Route path="products" element={<Products />} />
-              <Route path="blogs" element={<Blogs />} />
-              <Route path="orders" element={<Orders />} />
-              <Route path="customers" element={<Customers />} />
-              <Route path="discounts" element={<Discounts />} />
-              <Route path="profile-admin" element={<ProfileAdmin />} />
-            </Route>
-            
-           
-            <Route path="*" element={<Navigate to="/login" replace />} />
-          </Routes>
-        </BrowserRouter>
-        </ProductProvider>
-    </BlogProvider>
-    </DiscountProvider>
-    </CustomerProvider>
-    </OrderProvider>
-    </UserProvider>
+        <CategoriesProvider>
+        <OrderProvider>
+          <CustomerProvider>
+            <DiscountProvider>
+              <BlogProvider>
+                <ProductProvider>
+                  <BrowserRouter>
+                    <Routes>
+                      <Route path="/login" element={<Login />} />
+
+                      <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+                        <Route index element={<Dashboard />} />
+                        <Route path="categories" element={<Categories />} />
+                        <Route path="products" element={<Products />} />
+                        <Route path="blogs" element={<Blogs />} />
+                        <Route path="orders" element={<Orders />} />
+                        <Route path="customers" element={<Customers />} />
+                        <Route path="discounts" element={<Discounts />} />
+                        <Route path="profile-admin" element={<ProfileAdmin />} />
+                      </Route>
+
+
+                      <Route path="*" element={<Navigate to="/login" replace />} />
+                    </Routes>
+                  </BrowserRouter>
+                </ProductProvider>
+              </BlogProvider>
+            </DiscountProvider>
+          </CustomerProvider>
+        </OrderProvider>
     </CategoriesProvider>
+      </UserProvider>
   );
 }
 

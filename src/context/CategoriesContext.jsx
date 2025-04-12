@@ -4,10 +4,7 @@ import { categoriesAPI } from '../services/api/categories.api';
 const CategoriesContext = createContext();
 
 export const CategoriesProvider = ({ children }) => {
-  const [categories, setCategories] = useState(() => {
-    const storedCategories = localStorage.getItem('categories');
-    return storedCategories ? JSON.parse(storedCategories) : [];
-  });
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -18,8 +15,10 @@ export const CategoriesProvider = ({ children }) => {
   const fetchCategories = async () => {
     try {
       setLoading(true);
+      console.log('Fetching categories...');
       const data = await categoriesAPI.getAllCategories();
-      setCategories(data);
+      console.log("Fetched categories:", data);
+      setCategories(data.categories);
       updateLocalStorage(data);
       setError(null);
     } catch (err) {
@@ -76,6 +75,7 @@ export const CategoriesProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    console.log('Categories:', categories);
     if (categories.length === 0) {
       fetchCategories();
     } else {
@@ -94,7 +94,7 @@ export const CategoriesProvider = ({ children }) => {
   };
 
   return (
-    <CategoriesContext.Provider value={value}>
+    <CategoriesContext.Provider value={value} categories={categories}>
       {children}
     </CategoriesContext.Provider>
   );

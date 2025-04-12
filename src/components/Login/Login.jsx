@@ -20,12 +20,11 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    
     if (!email || !password) {
       setError('Please enter both email and password');
       return;
     }
-
+    
     try {
       const credentials = {
         email: email.trim(),

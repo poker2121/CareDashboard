@@ -1,94 +1,60 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { authAPI } from '../services/api/auth.api';
+import { userAPI } from '../services/api/user.api';
 import Swal from 'sweetalert2';
+import axios from 'axios';
 
 export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userData, setUserData] = useState(null);
+  const [userToken, setUserToken] = useState(localStorage.getItem("userToken"));
 
   useEffect(() => {
-  
-    const checkAuth = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const storedUser = localStorage.getItem('user');
-        
+    const token = localStorage.getItem("userToken");
+    if (token) {
+      setUserToken(token);
+      setIsAuthenticated(true);
+      // Make sure axios is configured with the token
+      axios.defaults.headers.common['authorization'] = `pharma__${token}`;
       
-        if (!token || !storedUser) {
-          setUser(null);
-          setIsAuthenticated(false);
-          setLoading(false);
-          return;
-        }
-
-     
-        try {
-   
-          const response = await authAPI.validateToken(token);
-          if (response.data.valid) {
-            setUser(JSON.parse(storedUser));
-            setIsAuthenticated(true);
-          } else {
-            
-            clearAuthData();
-          }
-        } catch (err) {
-      
-          console.error('Token validation error:', err);
-          clearAuthData();
-        }
-      } catch (err) {
-        console.error('Auth check error:', err);
-        clearAuthData();
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkAuth();
+      // Fetch user data when component mounts if token exists
+      refreshUserData();
+    }
   }, []);
 
   const clearAuthData = () => {
     setUser(null);
     setIsAuthenticated(false);
+    setUserData(null);
+    setUserToken(null);
     localStorage.removeItem('user');
-    localStorage.removeItem('token');
+    localStorage.removeItem('userToken');
+    delete axios.defaults.headers.common['authorization'];
   };
 
   const login = async (credentials) => {
     try {
       setLoading(true);
       setError(null);
-      
-      // Check if the email is admin@gmail.com
-      if (credentials.email !== 'admin@gmail.com') {
-       
-        Swal.fire({
-          icon: 'error',
-          title: 'Access Denied',
-          text: 'You are not allowed to access this dashboard.',
-        });
-        return { success: false, error: 'You are not allowed to access this dashboard.' };
-      }
+      console.log('Login API called with credentials:', credentials);
       
       const response = await authAPI.login(credentials);
-      const userData = response.data;
+      const token = response.data.token;
+      localStorage.setItem("userToken", token);
       
-     
-      setUser(userData);
+      // Set token in state and axios headers
+      setUserToken(token);
       setIsAuthenticated(true);
-      localStorage.setItem('user', JSON.stringify(userData));
+      axios.defaults.headers.common['authorization'] = `pharma__${token}`;
       
-    
-      if (userData.token) {
-        localStorage.setItem('token', userData.token);
-      }
-      
-      
+      const userData = response.data;
+      setUserData(userData);
+
       Swal.fire({
         icon: 'success',
         title: 'Login Successful',
@@ -96,19 +62,18 @@ export const UserProvider = ({ children }) => {
         timer: 2000,
         showConfirmButton: false
       });
-      
+
       return { success: true, data: userData };
     } catch (err) {
       const errorMessage = err.response?.data?.message || 'Login failed';
       setError(errorMessage);
-      
-    
+
       Swal.fire({
         icon: 'error',
         title: 'Login Failed',
         text: errorMessage,
       });
-      
+
       return { success: false, error: errorMessage };
     } finally {
       setLoading(false);
@@ -117,7 +82,6 @@ export const UserProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-  
       const result = await Swal.fire({
         title: 'Logout',
         text: 'Are you sure you want to logout?',
@@ -127,24 +91,20 @@ export const UserProvider = ({ children }) => {
         cancelButtonColor: '#d33',
         confirmButtonText: 'Yes, logout'
       });
-      
+
       if (result.isConfirmed) {
         setLoading(true);
-        
-        
-        if (user) {
+
+        if (userToken) {
           try {
             await authAPI.logout();
           } catch (error) {
             console.error('Logout API error:', error);
-           
           }
         }
-        
-        // مسح بيانات المستخدم
+
         clearAuthData();
-        
-        // عرض رسالة نجاح
+
         Swal.fire({
           icon: 'success',
           title: 'Logged Out',
@@ -152,7 +112,7 @@ export const UserProvider = ({ children }) => {
           timer: 2000,
           showConfirmButton: false
         });
-        
+
         return { success: true };
       } else {
         return { success: false, canceled: true };
@@ -165,47 +125,54 @@ export const UserProvider = ({ children }) => {
     }
   };
 
- 
-  useEffect(() => {
-    if (isAuthenticated) {
-      const tokenCheckInterval = setInterval(async () => {
-        const token = localStorage.getItem('token');
-        if (token) {
-          try {
-            const response = await authAPI.validateToken(token);
-            if (!response.data.valid) {
-              clearAuthData();
-              Swal.fire({
-                icon: 'warning',
-                title: 'Session Expired',
-                text: 'Your session has expired. Please login again.',
-                timer: 3000,
-                showConfirmButton: false
-              });
-            }
-          } catch (err) {
-            console.error('Token validation error:', err);
-          }
-        }
-      }, 15 * 60 * 1000);
-
-      return () => clearInterval(tokenCheckInterval);
+  const refreshUserData = async () => {
+    const token = localStorage.getItem('userToken');
+    if (!token) {
+      setIsAuthenticated(false);
+      setUserData(null);
+      return false;
     }
-  }, [isAuthenticated]);
-
- 
-  const isAdmin = user && user.role === 'Admin';
+    
+    try {
+      // Ensure the token is set in axios headers
+      axios.defaults.headers.common['authorization'] = `pharma__${token}`;
+      
+      // Make an API call to get user profile
+      const response = await userAPI.getProfile();
+      
+      if (response && response.data) {
+        setUserData(response.data);
+        setUserToken(token);
+        setIsAuthenticated(true);
+        return true;
+      } else {
+        // If no valid response, clear auth data
+        clearAuthData();
+        return false;
+      }
+    } catch (error) {
+      console.error("Failed to refresh user data:", error);
+      // Only clear auth data if it's an authentication error (401)
+      if (error.response && error.response.status === 401) {
+        clearAuthData();
+      }
+      return false;
+    }
+  };
 
   return (
-    <UserContext.Provider 
-      value={{ 
-        user, 
-        login, 
-        logout, 
-        loading, 
+    <UserContext.Provider
+      value={{
+        user,
+        login,
+        logout,
+        loading,
         error,
-        isAdmin,
-        isAuthenticated
+        isAuthenticated,
+        refreshUserData,
+        userToken,
+        userData,
+        setUserToken
       }}
     >
       {children}
