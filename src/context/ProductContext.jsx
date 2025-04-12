@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { productsAPI } from "../services/api/products.api";
+import { toast } from "react-toastify";
 
 const ProductContext = createContext();
 
@@ -28,6 +29,7 @@ const normalizeProduct = (apiProduct) => {
       ? new Date(apiProduct.createdAt).toISOString().split("T")[0]
       : new Date().toISOString().split("T")[0],
     bestSeller: apiProduct.bestSeller === "true" || apiProduct.bestSeller === true || false,
+    isDeleted: apiProduct.isDeleted
   };
 };
 
@@ -37,47 +39,59 @@ const ProductProvider = ({ children }) => {
   const [error, setError] = useState(null);
 
   // Fetch all products on component mount
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await productsAPI.getAllProducts();
+      const normalizedProducts = Array.isArray(response.data.products)
+        ? response.data.products.map(normalizeProduct)
+        : [];
+      setProducts(normalizedProducts);
+    } catch (error) {
+      setError(error.message || "Failed to fetch products");
+      Swal.fire({
+        icon: "error",
+        title: "Error Fetching Products",
+        text: error.message,
+      });
+      setProducts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const response = await productsAPI.getAllProducts();
-        const normalizedProducts = Array.isArray(response.data.products)
-          ? response.data.products.map(normalizeProduct)
-          : [];
-        setProducts(normalizedProducts);
-      } catch (error) {
-        setError(error.message || "Failed to fetch products");
-        Swal.fire({
-          icon: "error",
-          title: "Error Fetching Products",
-          text: error.message,
-        });
-        setProducts([]);
-      } finally {
-        setLoading(false);
-      }
-    };
+
     fetchProducts();
   }, []);
 
   const addProduct = async (formData) => {
     try {
+      console.log("Form Data:", formData);
       setLoading(true);
       const response = await productsAPI.createProduct(formData);
-      const normalizedNewProduct = normalizeProduct(response.data);
-      setProducts((prevProducts) => {
-        const currentProducts = Array.isArray(prevProducts) ? prevProducts : [];
-        return [...currentProducts, normalizedNewProduct];
-      });
-      Swal.fire({
-        icon: "success",
-        title: "Product Added Successfully!",
-        showConfirmButton: false,
-        timer: 1500,
-      });
-      return normalizedNewProduct;
+      console.log("Response:", response);
+      if (response.status === 200 || response.data.message === "Done" || response.status === 201) {
+
+        Swal.fire({
+          icon: "success",
+          title: "Product Updated Successfully!",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        fetchProducts();
+      }
+      // const normalizedNewProduct = normalizeProduct(response.data);
+      // setProducts((prevProducts) => {
+      //   const currentProducts = Array.isArray(prevProducts) ? prevProducts : [];
+      //   return [...currentProducts, normalizedNewProduct];
+      // });
+      // Swal.fire({
+      //   icon: "success",
+      //   title: "Product Added Successfully!",
+      //   showConfirmButton: false,
+      //   timer: 1500,
+      // });
     } catch (error) {
       console.error("Add Product Error:", error);
       Swal.fire({
@@ -95,19 +109,23 @@ const ProductProvider = ({ children }) => {
     try {
       setLoading(true);
       const response = await productsAPI.updateProduct(productId, formData);
-      const normalizedUpdatedProduct = normalizeProduct(response.data);
-      setProducts(prevProducts => 
-        prevProducts.map((product) =>
-          product.id === productId ? normalizedUpdatedProduct : product
-        )
-      );
-      Swal.fire({
-        icon: "success",
-        title: "Product Updated Successfully!",
-        showConfirmButton: false,
-        timer: 1500,
-      });
-      return normalizedUpdatedProduct;
+      if (response.status === 200) {
+
+        Swal.fire({
+          icon: "success",
+          title: "Product Updated Successfully!",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        fetchProducts();
+      }
+      // const normalizedUpdatedProduct = normalizeProduct(response.data);
+      // setProducts(prevProducts =>
+      //   prevProducts.map((product) =>
+      //     product.id === productId ? normalizedUpdatedProduct : product
+      //   )
+      // );
+      // return normalizedUpdatedProduct;
     } catch (error) {
       console.error("Update Product Error:", error);
       Swal.fire({
@@ -165,29 +183,29 @@ const ProductProvider = ({ children }) => {
 
   const searchProducts = async (searchTerm) => {
     if (!searchTerm.trim()) return products;
+    
     try {
-      setLoading(true);
+      // Use a local loading state instead of the global one to prevent re-renders
+      // of all components that depend on the ProductContext
       const response = await productsAPI.searchProducts(searchTerm);
+      
       const searchResults = Array.isArray(response.data.products)
         ? response.data.products.map(normalizeProduct)
         : [];
+        
       return searchResults;
     } catch (error) {
       console.error("Search Products Error:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Error Searching Products",
-        text: error.response?.data?.message || error.message,
-      });
+      toast.error(error.response?.data?.message || "Error searching products");
       return products;
-    } finally {
-      setLoading(false);
     }
   };
+  
 
   const filterByCategory = (category) => {
+    console.log("Filtering by category:", category);
     if (!category || category === "All Categories") return products;
-    return products.filter((product) => product.category === category);
+    return products.filter((product) => product.categoryId === category);
   };
 
   const sortProducts = (sortBy, productsToSort = products) => {
