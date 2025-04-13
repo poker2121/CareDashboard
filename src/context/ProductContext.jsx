@@ -37,6 +37,7 @@ const ProductProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [productsLength, setProductsLength] = useState(0)
 
   // Fetch all products on component mount
   const fetchProducts = async () => {
@@ -48,6 +49,7 @@ const ProductProvider = ({ children }) => {
         ? response.data.products.map(normalizeProduct)
         : [];
       setProducts(normalizedProducts);
+      setProductsLength(normalizedProducts.length)
     } catch (error) {
       setError(error.message || "Failed to fetch products");
       Swal.fire({
@@ -241,6 +243,7 @@ const ProductProvider = ({ children }) => {
         sortProducts,
         loading,
         error,
+        productsLength
       }}
     >
       {children}

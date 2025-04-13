@@ -13,9 +13,11 @@ import {
 import styles from './Categories.module.css';
 import { Helmet } from 'react-helmet';
 import { useCategories } from '../../context/CategoriesContext';
+import { useProductContext } from '../../context/ProductContext';
 
 const Categories = () => {
   const { categories, loading, error, fetchCategories, createCategory, updateCategory, deleteCategory } = useCategories();
+  const { productsLength } = useProductContext();
   const [categoryCards, setCategoryCards] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -31,6 +33,7 @@ const Categories = () => {
 
  
   useEffect(() => {
+    console.log(categories);
     console.log('Categories data:', categories);
     
 
@@ -205,7 +208,7 @@ const Categories = () => {
         </div>
       ) : (
         <Row className="g-4">
-          {categoryCards.map((category, index) => (
+          {categories.map((category, index) => (
             <Col key={index} xs={12} sm={6} lg={3}>
               <Card className={styles.categoryCard}>
                 <Card.Body>
@@ -231,8 +234,11 @@ const Categories = () => {
                       )}
                     </div>
                   </div>
+                  <div>
+                    <img src={category.Image.path} alt={category.name} className={styles.categoryImage + " img-fluid"} />
+                  </div>
                   
-                  <h3 className={styles.categoryTitle}>{category.title}</h3>
+                  <h3 className={styles.categoryTitle}>{category.name}</h3>
                   
                   <div className={styles.stats}>
                     <div className={styles.stat}>
@@ -241,7 +247,7 @@ const Categories = () => {
                     </div>
                     <div className={styles.stat}>
                       <span className={styles.statLabel}>Active</span>
-                      <span className={styles.statValue}>{category.activeProducts}</span>
+                      <span className={styles.statValue}>{category.products.length}</span>
                     </div>
                   </div>
 
@@ -249,8 +255,8 @@ const Categories = () => {
                     <div 
                       className={styles.progress} 
                       style={{ 
-                        width: `${(category.activeProducts / category.totalProducts) * 100 || 0}%`,
-                        backgroundColor: category.color
+                        width: `${(category.products.length / productsLength) * 100 || 0}%`,
+                        // backgroundColor: category.color
                       }}
                     ></div>
                   </div>

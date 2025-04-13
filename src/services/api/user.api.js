@@ -5,7 +5,7 @@ export const userAPI = {
         privateAxios.get('/user/get User'),
     
     getAllUsers: () => 
-        privateAxios.get('/user/All users'),
+        privateAxios.get('/user'),
     
     updateUserProfile: (userData, id) => 
         privateAxios.put(`/user/${id}`, userData, {

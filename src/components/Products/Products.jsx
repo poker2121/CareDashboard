@@ -37,7 +37,6 @@ const Products = () => {
 
   useEffect(() => {
     setFilteredProducts(products);
-    console.log("Products updated:", products);
   }, [products]);
 
   useEffect(() => {
