@@ -130,6 +130,10 @@
   border-radius: 12px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+.statItem span {
+  font-size: 12px !important;
+
+}
 
 .statItem:hover {
   transform: translateY(-2px);
@@ -260,7 +264,7 @@
   background-color: white;
   border-radius: 16px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+  overflow: auto;
 }
 .customersTable {
   width: 100%;

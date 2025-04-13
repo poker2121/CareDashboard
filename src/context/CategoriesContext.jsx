@@ -15,9 +15,7 @@ export const CategoriesProvider = ({ children }) => {
   const fetchCategories = async () => {
     try {
       setLoading(true);
-      console.log('Fetching categories...');
       const data = await categoriesAPI.getAllCategories();
-      console.log("Fetched categories:", data);
       setCategories(data.categories);
       updateLocalStorage(data);
       setError(null);
@@ -75,7 +73,6 @@ export const CategoriesProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    console.log('Categories:', categories);
     if (categories.length === 0) {
       fetchCategories();
     } else {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FaSearch, FaUser, FaShoppingBag, FaDollarSign, FaCalendarAlt, FaEnvelope, FaPhone, FaEye, FaMapMarkerAlt, FaIdCard } from 'react-icons/fa';
-import { Modal } from 'react-bootstrap';
+import { Badge, Modal } from 'react-bootstrap';
 import { useCustomerContext } from '../../context/CustomerContext';
 import styles from './Customers.module.css';
 
@@ -10,7 +10,7 @@ export default function Customers() {
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
-  const filteredCustomers = customers.filter(customer =>
+  const filteredCustomers = customers.length && customers.filter(customer =>
     customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     customer.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -75,18 +75,18 @@ export default function Customers() {
               <th>Customer</th>
               <th>Contact Information</th>
               <th>Join Date</th>
-              <th>Orders</th>
-              <th>Total Spent</th>
+              <th>Activation</th>
+              <th>Role</th>
               <th>Details</th>
             </tr>
           </thead>
           <tbody>
-            {filteredCustomers.map((customer) => (
+            {filteredCustomers.length > 0 && filteredCustomers.map((customer) => (
               <tr key={customer.id} className={styles.customerRow}>
                 <td className={styles.customerCell}>
-                  <div className={styles.customerAvatar}>
-                    {customer.name.charAt(0)}
-                  </div>
+                  {customer.profilePic ? <img src={customer.profilePic} alt={customer.name} className={styles.customerAvatar} /> : <div className={styles.customerAvatar}>
+                    { customer.name.charAt(0)}
+                  </div>}
                   <div className={styles.customerInfo}>
                     <h4>{customer.name}</h4>
                     <span className={styles.customerLocation}>{customer.location}</span>
@@ -106,14 +106,12 @@ export default function Customers() {
                 </td>
                 <td className={styles.ordersCell}>
                   <div className={styles.orderCount}>
-                    {customer.orders}
-                    <span className={styles.orderLabel}>orders</span>
+                    <Badge bg={customer.status === 'Active' ? 'success' : 'danger'}>{customer.status}</Badge>
                   </div>
                 </td>
                 <td className={styles.spentCell}>
                   <div className={styles.spentAmount}>
-                    ${customer.totalSpent.toLocaleString()}
-                    <span className={styles.spentLabel}>lifetime</span>
+                    {customer.role}
                   </div>
                 </td>
                 <td>
@@ -136,7 +134,6 @@ export default function Customers() {
         show={showModal} 
         onHide={() => setShowModal(false)}
         centered
-        className={styles.customerModal}
       >
         <Modal.Header closeButton>
           <Modal.Title>Customer Details</Modal.Title>
@@ -145,8 +142,10 @@ export default function Customers() {
           {selectedCustomer && (
             <div className={styles.customerDetails}>
               <div className={styles.customerHeader}>
-                <div className={styles.modalAvatar}>
-                  {selectedCustomer.name.charAt(0)}
+                <div className={styles.modalAvatar + ' bg-transparent'}>
+                {selectedCustomer.profilePic ? <img src={selectedCustomer.profilePic} alt={selectedCustomer.name} className={styles.customerAvatar} /> : <div className={styles.customerAvatar}>
+                    { selectedCustomer.name.charAt(0)}
+                  </div>}
                 </div>
                 <div>
                   <h3>{selectedCustomer.name}</h3>
@@ -174,17 +173,17 @@ export default function Customers() {
 
               <div className={styles.statsSection}>
                 <div className={styles.statItem}>
-                  <label>Total Orders</label>
-                  <span>{selectedCustomer.orders}</span>
+                  <label>Gender</label>
+                  <span>{selectedCustomer.gender}</span>
                 </div>
                 <div className={styles.statItem}>
-                  <label>Total Spent</label>
-                  <span>${selectedCustomer.totalSpent.toLocaleString()}</span>
+                  <label>confirmed</label>
+                  <span>{selectedCustomer.confirmed}</span>
                 </div>
                 <div className={styles.statItem}>
-                  <label>Average Order</label>
+                  <label>Bocked</label>
                   <span>
-                    ${(selectedCustomer.totalSpent / selectedCustomer.orders).toFixed(2)}
+                    {selectedCustomer.blocked}
                   </span>
                 </div>
               </div>

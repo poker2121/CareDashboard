@@ -15,7 +15,12 @@ export const categoriesAPI = {
     // POST create category
     createCategory: async (categoryData) => {
         try {
-            const response = await privateAxios.post('/category', categoryData);
+            const response = await privateAxios.post('/category', categoryData, {
+                headers: {
+                    ...privateAxios.defaults.headers.common,
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
             return response.data;
         } catch (error) {
             console.error('Error creating category:', error);
@@ -26,7 +31,12 @@ export const categoriesAPI = {
     // PUT update category
     updateCategory: async (id, categoryData) => {
         try {
-            const response = await privateAxios.put(`/category/${id}`, categoryData);
+            const response = await privateAxios.put(`/category/${id}`, categoryData, {
+                headers: {
+                    ...privateAxios.defaults.headers.common,
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
             return response.data;
         } catch (error) {
             console.error(`Error updating category with ID ${id}:`, error);
