@@ -1,31 +1,45 @@
 import React, { createContext, useContext, useState } from 'react';
-
+import { ordersAPI } from '../services/api';
+import Swal from 'sweetalert2';
 const OrderContext = createContext();
 
 export function OrderProvider({ children }) {
-  const [orders] = useState([
-    {
-      id: "ORD-001",
-      customer: {
-        name: "John Doe",
-        email: "john@example.com",
-        avatar: "J"
-      },
-      date: "2024-03-01",
-      items: [
-        { name: "Product A", quantity: 2, price: 129.99 },
-        { name: "Product B", quantity: 1, price: 89.99 }
-      ],
-      total: 349.97,
-      status: "Delivered",
-      paymentMethod: "Credit Card",
-      shippingAddress: "123 Main St, City, Country"
-    },
-  
-  ]);
+  const [orders, setOrders] = useState([]);
+
+  const fetchOrders = async () => {
+    try {// Fetch orders from the API
+      const response = await ordersAPI.getAllOrders();
+      console.log(response);
+      console.log(response.data.orders);
+      if(response.data.message === "Done"){
+        setOrders(response.data.orders);
+      }
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+    }
+  };
+
+  const updateOrderStatus = async (orderId, status) => {
+    try {
+      const res = await ordersAPI.updateOrderStatus(orderId, status);
+      console.log(res);
+      if (res.status === 200) {
+      
+              Swal.fire({
+                icon: "success",
+                title: "Order Updated Successfully!",
+                showConfirmButton: false,
+                timer: 1500,
+              });
+            }
+      fetchOrders();
+    } catch (error) {
+      console.error("Error updating order status:", error);
+    }
+  };
 
   return (
-    <OrderContext.Provider value={{ orders }}>
+    <OrderContext.Provider value={{ orders, fetchOrders, updateOrderStatus }}>
       {children}
     </OrderContext.Provider>
   );

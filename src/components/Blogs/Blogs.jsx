@@ -1,16 +1,15 @@
 import { useState, useEffect, useMemo } from "react";
-import { Button, Form, Row, Col, Modal, Spinner } from "react-bootstrap";
+import { Button, Form, Row, Col, Modal, Spinner, Card } from "react-bootstrap";
 import { FaPlus, FaEdit, FaTrash, FaSearch, FaCalendarAlt, FaUser } from "react-icons/fa";
 import { useBlogContext } from "../../context/BlogContext";
 import styles from "./Blogs.module.css";
 import { Helmet } from "react-helmet";
 
 const Blogs = () => {
-  const { blogs, addBlog, updateBlog, deleteBlog } = useBlogContext();
+  const { blogs, addBlog, updateBlog, deleteBlog, isLoading, addLoading } = useBlogContext();
   const [showModal, setShowModal] = useState(false);
   const [editingBlog, setEditingBlog] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
   const [formData, setFormData] = useState({
     title: "",
     author: "",
@@ -19,42 +18,35 @@ const Blogs = () => {
   });
   const [previewUrl, setPreviewUrl] = useState(null);
 
-  useEffect(() => {
-    setIsLoading(Array.isArray(blogs) && blogs.length === 0);
-  }, [blogs]);
 
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 800);
-    return () => clearTimeout(timer);
-  }, []);
 
   const handleShowModal = (blog = null) => {
     setEditingBlog(blog);
-    
-    
+
+
     if (previewUrl) {
       URL.revokeObjectURL(previewUrl);
       setPreviewUrl(null);
     }
-    
+
     setFormData({
       title: blog?.title || "",
       author: blog?.author || "",
       excerpt: blog?.excerpt || "",
       image: null,
     });
-    
+
     setShowModal(true);
   };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-   
+
       if (previewUrl) {
         URL.revokeObjectURL(previewUrl);
       }
-      
+
       const newPreviewUrl = URL.createObjectURL(file);
       setPreviewUrl(newPreviewUrl);
       setFormData({ ...formData, image: file });
@@ -64,29 +56,29 @@ const Blogs = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Submitting form data:", formData);
-    
+
     if (editingBlog) {
       updateBlog(editingBlog.id, formData);
     } else {
       addBlog(formData);
     }
-    
+
     setShowModal(false);
   };
 
   const getImageUrl = (blog) => {
     if (!blog || !blog.image) return "https://placehold.co/300x200";
-  
+
     if (typeof blog.image === 'string') {
       return blog.image;
     } else if (blog.image instanceof File) {
       return URL.createObjectURL(blog.image);
     } else if (blog.image instanceof Blob) {
-    
+
       return URL.createObjectURL(blog.image);
     }
-    
- 
+
+
     return "https://placehold.co/300x200";
   };
 
@@ -126,7 +118,13 @@ const Blogs = () => {
             className={styles.searchInput}
           />
           {searchTerm && (
-            <button className={styles.clearSearch} onClick={() => setSearchTerm("")}>×</button>
+            <button
+              className={styles.clearSearch}
+              onClick={() => setSearchTerm("")}
+              aria-label="Clear search"
+            >
+              <span className={styles.clearIcon}>×</span>
+            </button>
           )}
         </div>
       </div>
@@ -167,22 +165,23 @@ const Blogs = () => {
           </div>
         </div>
       ) : (
-        <div className={styles.blogList}>
+        <Row className={styles.blogList}>
           {filteredBlogs.map((blog) => (
-            <div key={blog.id} className={styles.blogItem}>
-              <div className={styles.blogImage}>
-                <img src={getImageUrl(blog)} alt={blog.title || "Blog Image"} />
-              </div>
+            <Col md={6} key={blog.id} className={styles.blogColumn} >
+              <Card className={styles.blogCard} >
+                <Card.Body className={styles.cardBody}>
+                  <div className={styles.blogImage}>
+                    <img src={getImageUrl(blog)} alt={blog.title || "Blog Image"} />
+                  </div>
 
-              <div className={styles.blogContent}>
-                <h3 className={styles.blogTitle}>{blog.title}</h3>
-                <p className={styles.blogExcerpt}>{blog.excerpt}</p>
-
-                <div className={styles.blogMeta}>
+                  <h3 className={styles.blogTitle + " mt-3"}>{blog.title}</h3>
+                  <p className={styles.blogExcerpt}>{blog.excerpt}</p>
                   <div className={styles.metaInfo}>
                     <span className={styles.metaItem}><FaUser /> {blog.author}</span>
                     <span className={styles.metaItem}><FaCalendarAlt /> {blog.date}</span>
                   </div>
+                </Card.Body>
+                <Card.Footer className={styles.cardFooter}>
                   <div className={styles.blogActions}>
                     <Button variant="outline-primary" size="sm" className={styles.actionButton} onClick={() => handleShowModal(blog)}>
                       <FaEdit /> Edit
@@ -191,11 +190,13 @@ const Blogs = () => {
                       <FaTrash /> Delete
                     </Button>
                   </div>
-                </div>
-              </div>
-            </div>
+                </Card.Footer>
+              </Card>
+
+              
+            </Col>
           ))}
-        </div>
+        </Row>
       )}
 
       <Modal show={showModal} onHide={() => setShowModal(false)} size="lg" centered className={styles.blogModal}>
@@ -277,7 +278,7 @@ const Blogs = () => {
               <Button variant="secondary" onClick={() => setShowModal(false)} className={styles.cancelButton}>
                 Cancel
               </Button>
-              <Button variant="primary" type="submit" className={styles.submitButton}>
+              <Button variant="primary" type="submit" className={styles.submitButton} disabled={addLoading}>
                 {editingBlog ? "Update Blog" : "Add Blog"}
               </Button>
             </div>
