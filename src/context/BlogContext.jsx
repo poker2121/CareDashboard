@@ -21,7 +21,7 @@ const BlogProvider = ({ children }) => {
       if (response.data.blogs.length > 0) {
         setIsLoading(false);
         const formattedBlogs = response.data.blogs.map((blog, index) => ({
-          id: blog.id || Date.now() + index,
+          id: blog._id,
           title: blog.title || "Untitled",
           excerpt: blog.excerpt || "No excerpt available",
           author: blog.author || "Unknown Author",
@@ -103,6 +103,7 @@ const BlogProvider = ({ children }) => {
 
   const updateBlog = async (blogId, updatedBlog) => {
     try {
+      console.log("Updating blog with ID:", blogId);
       // إنشاء FormData جديد
       const formData = new FormData();
 
