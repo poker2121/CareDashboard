@@ -15,8 +15,6 @@ export function CustomerProvider({ children }) {
         // Call the API
         const response = await userAPI.getAllUsers();
 
-        // Log the full response for debugging
-        console.log('API Response:', response);
 
         // Try to extract user data from various possible response formats
         let userData = [];
@@ -25,7 +23,6 @@ export function CustomerProvider({ children }) {
         if (response.status === 200 || response.status === 201 || response.data) {
           // Direct array response
           // setCustomers(response.data.users);
-          console.log('Response data:', response.data.users);
           const formattedCustomers = response.data.users.length && response.data.users.map(user => {
 
             return {
@@ -50,11 +47,9 @@ export function CustomerProvider({ children }) {
             };
           });
 
-          console.log('Formatted customers:', formattedCustomers);
           setCustomers(formattedCustomers);
         }
 
-        console.log('Extracted user data:', userData);
 
 
 
