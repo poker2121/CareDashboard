@@ -1,80 +1,67 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { couponesAPI } from '../services/api/coupones.api';
+import Swal from 'sweetalert2';
 
 const DiscountContext = createContext();
 
 export function DiscountProvider({ children }) {
   const STORAGE_KEY = 'discounts';
   const FETCH_TIME_KEY = 'lastFetchedTime';
-  const CACHE_DURATION = 60 * 60 * 1000; 
-
-  
-  const [discounts, setDiscounts] = useState(() => {
-    const savedDiscounts = localStorage.getItem(STORAGE_KEY);
-    return savedDiscounts ? JSON.parse(savedDiscounts) : [];
-  });
-
- 
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(discounts));
-  }, [discounts]);
+  const CACHE_DURATION = 60 * 60 * 1000;
 
 
-  useEffect(() => {
-    async function fetchDiscounts() {
-      try {
-        const lastFetched = localStorage.getItem(FETCH_TIME_KEY);
-        const now = new Date().getTime();
+  const [discounts, setDiscounts] = useState([]);
+  const [isGetCouponsLoading, setIsGetCouponsLoading] = useState(false);
 
-        if (lastFetched && now - new Date(lastFetched).getTime() < CACHE_DURATION) {
-     
-          return; 
-        }
 
-        console.log('🔄 Fetching discounts from API...');
-        const response = await couponesAPI.getAllCoupones();
+  const fetchDiscounts = async () => {
+    try {
 
-        let discountData = [];
-        if (response?.data) {
-          if (Array.isArray(response.data)) {
-            discountData = response.data;
-          } else if (response.data.data && Array.isArray(response.data.data)) {
-            discountData = response.data.data;
-          } else if (typeof response.data === 'object') {
-            discountData = Object.values(response.data);
-          }
-        }
+      setIsGetCouponsLoading(true);
+      const response = await couponesAPI.getAllCoupones();
+      console.log('🔄 Discounts fetched:', response);
 
-        const formattedData = discountData.map(discount => ({
-          id: discount.id,
+      if (response.data) {
+        const formattedData = response.data.coupons.map(discount => ({
+          id: discount._id,
           code: discount.code,
           amount: discount.amount,
           fromDate: discount.fromDate,
           toDate: discount.toDate,
-          maxUsage: discount.maxUsage,
+          maxUsage: discount.maxUsage || discount.usagePerUser[0].maxUsage,
           usageCount: discount.usageCount,
-          status: discount.status || 'Active'
+          status: discount.status || 'Active',
+          usagePerUser: discount.usagePerUser,
         }));
-
         setDiscounts(formattedData);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(formattedData));
-        localStorage.setItem(FETCH_TIME_KEY, new Date().toISOString());
-      } catch (error) {
-        console.error('❌ Error fetching discounts:', error);
+
       }
+      setIsGetCouponsLoading(false);
+
+
+    } catch (error) {
+      console.error('❌ Error fetching discounts:', error);
+      setIsGetCouponsLoading(false);
     }
+  }
 
-    fetchDiscounts();
-  }, []);
 
- 
+
+
+
   const addDiscount = async (newDiscount) => {
     try {
       const response = await couponesAPI.createCoupone(newDiscount);
       if (response?.data) {
-        const newDiscountWithId = { 
-          ...newDiscount, 
-          id: response.data.id || response.data._id || Date.now().toString() 
+        Swal.fire({
+          icon: 'success',
+          title: 'Discount added successfully',
+          showConfirmButton: false,
+          timer: 1500
+        })
+        const newDiscountWithId = {
+          ...newDiscount,
+          id: response.data.id || response.data._id || Date.now().toString()
         };
 
         const updatedDiscounts = [...discounts, newDiscountWithId];
@@ -88,14 +75,30 @@ export function DiscountProvider({ children }) {
     }
   };
 
-  
+
   const updateDiscount = async (updatedDiscount) => {
     try {
-      const response = await couponesAPI.updateCoupone(updatedDiscount.id, updatedDiscount);
+      const dataToSend = {
+        code: updatedDiscount.code,
+        amount: updatedDiscount.amount,
+        fromDate: updatedDiscount.fromDate,
+        toDate: updatedDiscount.toDate,
+        maxUsage: updatedDiscount.maxUsage,
+        usageCount: updatedDiscount.usageCount,
+      };
+      const response = await couponesAPI.updateCoupone(updatedDiscount.id, dataToSend);
       if (response?.data) {
-        setDiscounts(discounts.map(discount => 
+        setDiscounts(discounts.map(discount =>
           discount.id === updatedDiscount.id ? { ...discount, ...updatedDiscount } : discount
         ));
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: 'Discount updated successfully!',
+          showConfirmButton: false,
+          timer: 1500
+        })
+        fetchDiscounts();
         return true;
       }
       return false;
@@ -105,12 +108,19 @@ export function DiscountProvider({ children }) {
     }
   };
 
- 
+
   const deleteDiscount = async (id) => {
     try {
       const response = await couponesAPI.deleteCoupone(id);
       if (response) {
         setDiscounts(discounts.filter(discount => discount.id !== id));
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: 'Discount deleted successfully!',
+          showConfirmButton: false,
+          timer: 1500
+        })
         return true;
       }
       return false;
@@ -121,7 +131,7 @@ export function DiscountProvider({ children }) {
   };
 
   return (
-    <DiscountContext.Provider value={{ discounts, addDiscount, updateDiscount, deleteDiscount }}>
+    <DiscountContext.Provider value={{ discounts, addDiscount, updateDiscount, deleteDiscount, fetchDiscounts, isGetCouponsLoading }}>
       {children}
     </DiscountContext.Provider>
   );

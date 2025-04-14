@@ -1,24 +1,29 @@
-import  { useState } from 'react';
+import  { useEffect, useState } from 'react';
 import { FaPlus, FaEdit, FaTrash, FaCopy, FaSearch } from 'react-icons/fa';
-import { Modal, Form } from 'react-bootstrap';
+import { Modal, Form, Spinner } from 'react-bootstrap';
 import { useDiscountContext } from '../../context/DiscountContext';
 import styles from './Discounts.module.css';
 
 export default function Discounts() {
-  const { discounts, addDiscount, updateDiscount, deleteDiscount } = useDiscountContext();
+  const { discounts, addDiscount, updateDiscount, deleteDiscount, fetchDiscounts, isGetCouponsLoading } = useDiscountContext();
   const [showModal, setShowModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [editingDiscount, setEditingDiscount] = useState(null);
+
+  useEffect(() => {
+    fetchDiscounts();
+  }, [])
   const [formData, setFormData] = useState({
     code: '',
     amount: '',
     fromDate: '',
     toDate: '',
-    maxUsage: '',
-    usageCount: 0,
+    maxUsage: 10,
+    usageCount: 10,
   });
 
   const handleShowModal = (discount = null) => {
+    console.log('Discount to edit:', discount);
     if (discount) {
       setEditingDiscount(discount);
       setFormData({
@@ -36,15 +41,17 @@ export default function Discounts() {
         amount: '',
         fromDate: '',
         toDate: '',
-        maxUsage: '',
-        usageCount: 0,
+        maxUsage: 10,
+        usageCount: 10,
       });
     }
     setShowModal(true);
   };
 
   const handleSubmit = (e) => {
+
     e.preventDefault();
+    console.log(formData);
     if (editingDiscount) {
       updateDiscount({ ...formData, id: editingDiscount.id });
     } else {
@@ -56,6 +63,9 @@ export default function Discounts() {
   const filteredDiscounts = discounts.filter(discount =>
     discount.code && discount.code.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  if(isGetCouponsLoading) {
+    return <div className='text-center m-5 h-100'><Spinner animation="border" /></div>;
+  }
 
   return (
     <div className={styles.discountsContainer}>
@@ -93,8 +103,8 @@ export default function Discounts() {
             </tr>
           </thead>
           <tbody>
-            {filteredDiscounts.map((discount) => (
-              <tr key={discount.id}>
+            {filteredDiscounts.map((discount, i) => (
+              <tr key={i}>
                 <td>
                   <div className={styles.codeCell}>
                     <span>{discount.code}</span>
