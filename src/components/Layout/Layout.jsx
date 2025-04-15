@@ -5,10 +5,10 @@ import styles from './Layout.module.css';
 import Footer from './Footer';
 const Layout = () => {
   return (
-    <div className={styles.layoutWrapper}>
+    <div className={`${styles.layoutWrapper} h-100`} style={{height: '100vh'}}>
       <Sidebar />
       <div className={styles.mainContent}>
-        <Container fluid>
+        <Container fluid className='h-100' style={{height: '100vh'}}>
           <Outlet />
      
         </Container>
